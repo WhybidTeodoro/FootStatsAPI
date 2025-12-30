@@ -36,7 +36,7 @@ public class TeamController : ControllerBase
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out var userId))
-            return Unauthorized(new { message = "Token invalido ou sem identifação do usuario" });
+            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
 
         var teamAlreadyExists = await _context.Teams.AnyAsync(t => t.UserId == userId && t.Name == dto.Name);
 
@@ -70,14 +70,17 @@ public class TeamController : ControllerBase
         } 
     }
 
-
+    /// <summary>
+    /// Endpoint responsavel por retornar todos os times do usuario
+    /// </summary>
+    /// <returns></returns>
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-            return Unauthorized();
+            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
 
         try
         {
@@ -95,5 +98,29 @@ public class TeamController : ControllerBase
 
             return StatusCode(500, new { message = "Erro interno ao tentar listar os times do usuario" });
         }
+    }
+
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
+
+        var response = await _context.Teams.Where(team => team.Id == id && team.UserId == userId)
+                    .Select(team => new TeamResponseDto
+                    {
+                        Id = team.Id,
+                        Name = team.Name
+                    }).FirstOrDefaultAsync();
+
+        if (response == null)
+            return NotFound(new { message = "Time não encontrado" });
+         
+
+        return Ok(response);
+     
     }
 }
