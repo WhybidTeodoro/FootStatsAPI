@@ -100,7 +100,9 @@ public class TeamController : ControllerBase
         }
     }
 
-
+    /// <summary>
+    /// Endpoint responsavel por buscar o time do usuario pelo id do time
+    /// </summary>
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -122,5 +124,41 @@ public class TeamController : ControllerBase
 
         return Ok(response);
      
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateTeam(int id, UpdateTeamDto dto)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            return Unauthorized();
+
+        try
+        {
+            var team = await _context.Teams.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+
+            if (team == null)
+                return NotFound(new { message = "Time não encontrado" });
+
+            team.Name = dto.Name;
+
+            await _context.SaveChangesAsync();
+
+            var response = new TeamResponseDto
+            {
+                Id = team.Id,
+                Name = team.Name
+            };
+
+            return Ok(response);
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+       
+
     }
 }
