@@ -82,8 +82,6 @@ public class TeamController : ControllerBase
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
             return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
 
-        try
-        {
             var teams = await _context.Teams.Where(team => team.UserId == userId)
                 .Select(team => new TeamResponseDto
                 {
@@ -92,12 +90,7 @@ public class TeamController : ControllerBase
                 }).ToListAsync();
 
             return Ok(teams);
-        }
-        catch (Exception)
-        {
-
-            return StatusCode(500, new { message = "Erro interno ao tentar listar os times do usuario" });
-        }
+        
     }
 
     /// <summary>
@@ -126,13 +119,16 @@ public class TeamController : ControllerBase
      
     }
 
+    /// <summary>
+    /// Endpoint responsavel por atualizar um time do usuario
+    /// </summary>
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateTeam(int id, UpdateTeamDto dto)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-            return Unauthorized();
+            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
 
         try
         {
@@ -156,9 +152,38 @@ public class TeamController : ControllerBase
         catch (Exception)
         {
 
-            throw;
+            return StatusCode(500, new { message = "Erro interno ao tentar atualizar o time" });
         }
        
 
+    }
+
+    /// <summary>
+    /// Endpoint responsavel por deletar um time do usuario.
+    /// </summary>
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteTeam(int id)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
+        var team = await _context.Teams.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+
+        if (team == null)
+            return NotFound(new { message = "Time não encontrado" });
+
+        try
+        { 
+            _context.Teams.Remove(team);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+        catch (Exception)
+        {
+
+            return StatusCode(500, new { message = "Erro interno ao tentar excluir o time" });
+        }
     }
 }
