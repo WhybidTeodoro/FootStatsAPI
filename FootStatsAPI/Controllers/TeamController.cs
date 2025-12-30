@@ -67,10 +67,33 @@ public class TeamController : ControllerBase
         {
 
             return StatusCode(500, new { message = "Erro interno ao tentar criar o time para o usuario" });
-        }
-
-        
+        } 
     }
 
 
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            return Unauthorized();
+
+        try
+        {
+            var teams = await _context.Teams.Where(team => team.UserId == userId)
+                .Select(team => new TeamResponseDto
+                {
+                    Id = team.Id,
+                    Name = team.Name
+                }).ToListAsync();
+
+            return Ok(teams);
+        }
+        catch (Exception)
+        {
+
+            return StatusCode(500, new { message = "Erro interno ao tentar listar os times do usuario" });
+        }
+    }
 }
