@@ -163,8 +163,7 @@ public class TeamController : ControllerBase
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
             return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
 
-        try
-        {
+     
             var team = await _context.Teams.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
 
             if (team == null)
@@ -181,14 +180,6 @@ public class TeamController : ControllerBase
             };
 
             return Ok(response);
-        }
-        catch (Exception)
-        {
-
-            return StatusCode(500, new { message = "Erro interno ao tentar atualizar o time" });
-        }
-       
-
     }
 
     /// <summary>

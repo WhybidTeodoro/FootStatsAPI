@@ -90,4 +90,113 @@ public class PlayerController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Endpoint responsavel por retornar o jogador pelo id
+    /// </summary>
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
+
+        var player = await _context.Players.Where(p => p.Id == id && p.Team.UserId == userId)
+            .Select(player => new PlayerResponseDto
+            {
+                Id = player.Id,
+                Name = player.Name,
+                Position = player.Position,
+                ShirtNumber = player.ShirtNumber,
+                Goals = player.Goals,
+                Assists = player.Assists,
+                MatchesPlayed = player.MatchesPlayed
+            }).FirstOrDefaultAsync();
+
+        if (player == null)
+            return NotFound(new { message = "Jogador não encontrado" });
+       
+        return Ok(player);
+    }
+
+    /// <summary>
+    /// Endpoint responsavel por atualizar os dados de perfil do jogador
+    /// </summary>
+    [HttpPut("{id}/profile")]
+    public async Task<IActionResult> UpdateProfile(int id, UpdatePlayerProfileDto dto)
+    {
+        if(!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
+
+        var player = await _context.Players.FirstOrDefaultAsync(p => p.Id == id && p.Team.UserId == userId);
+
+        if (player == null)
+            return NotFound(new { message = "Jogador não encontrado" });
+
+        
+            player.Name = dto.Name;
+            player.Position = dto.Position;
+            player.ShirtNumber = dto.ShirtNumber;
+
+            await _context.SaveChangesAsync();
+
+            var response = new PlayerResponseDto
+            {
+                Id = id,
+                Name = player.Name,
+                Position = player.Position,
+                ShirtNumber = player.ShirtNumber,
+                Goals = player.Goals,
+                Assists = player.Assists,
+                MatchesPlayed = player.MatchesPlayed
+            };
+
+        return Ok(response); 
+   
+    }
+
+    /// <summary>
+    /// Endpoint responsavel por atualizar as estatisticas do jogador
+    /// </summary>
+    [HttpPut("{id}/stats")]
+    public async Task<IActionResult> UpdateStats(int id, UpdatePlayerStatsDto dto)
+    {
+
+        if(!ModelState.IsValid) 
+            return BadRequest(ModelState);
+
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
+
+        var player = await _context.Players.FirstOrDefaultAsync(p => p.Id == id && p.Team.UserId == userId);
+
+        if (player == null) 
+            return NotFound(new { message = "Jogador nao encontrado" });
+
+        player.Goals = dto.Goals;
+        player.Assists = dto.Assists;
+        player.MatchesPlayed = dto.MatchesPlayed;
+
+        await _context.SaveChangesAsync();
+
+        var response = new PlayerResponseDto
+        {
+            Id = id,
+            Name = player.Name,
+            Position = player.Position,
+            ShirtNumber = player.ShirtNumber,
+            Goals = player.Goals,
+            Assists = player.Assists,
+            MatchesPlayed = player.MatchesPlayed
+        };
+
+        return Ok(response);
+    }
 }
