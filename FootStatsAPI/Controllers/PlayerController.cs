@@ -178,7 +178,7 @@ public class PlayerController : ControllerBase
         var player = await _context.Players.FirstOrDefaultAsync(p => p.Id == id && p.Team.UserId == userId);
 
         if (player == null)
-            return NotFound(new { message = "Jogador nao encontrado" });
+            return NotFound(new { message = "Jogador não encontrado" });
 
         player.Goals = dto.Goals;
         player.Assists = dto.Assists;
@@ -198,5 +198,35 @@ public class PlayerController : ControllerBase
         };
 
         return Ok(response);
+    }
+
+    /// <summary>
+    /// Endpoint responsavel por deletar um jogador da base de dados
+    /// </summary>
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeletePlayer(int id)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
+
+        var player = await _context.Players.FirstOrDefaultAsync(p => p.Id == id && p.Team.UserId == userId);
+
+        if (player == null) 
+            return NotFound(new { message = "Jogador não encontrado" });
+
+        try
+        {
+            _context.Players.Remove(player);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+        catch (Exception)
+        {
+
+            return StatusCode(500, new { message = "Erro interno ao tentar deletar jogador" });
+        }
     }
 }
