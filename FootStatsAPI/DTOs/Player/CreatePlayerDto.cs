@@ -45,4 +45,14 @@ public class CreatePlayerDto
     /// </summary>
     [Range(0, int.MaxValue, ErrorMessage = "O Numero de jogos não pode ser negativo")]
     public int MatchesPlayed { get; set; }
+
+    /// <summary>
+    /// Data da criação do player em sistema
+    /// </summary>
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    /// <summary>
+    /// Representa o time do jogador
+    /// </summary>
+    public int TeamId { get; set; }
 }

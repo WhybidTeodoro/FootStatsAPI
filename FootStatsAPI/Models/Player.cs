@@ -49,6 +49,11 @@ public class Player
     public int MatchesPlayed { get; set; }
 
     /// <summary>
+    /// Data da criação do player em sistema
+    /// </summary>
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    /// <summary>
     /// Representa o time do jogador
     /// </summary>
     public int TeamId { get; set; }
