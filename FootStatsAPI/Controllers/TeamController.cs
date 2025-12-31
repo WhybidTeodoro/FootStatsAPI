@@ -1,4 +1,5 @@
 ﻿using FootStatsAPI.Data;
+using FootStatsAPI.DTOs.Player;
 using FootStatsAPI.DTOs.Team;
 using FootStatsAPI.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -117,6 +118,38 @@ public class TeamController : ControllerBase
 
         return Ok(response);
      
+    }
+
+    /// <summary>
+    /// Endpoint responsavel por retornar todos os jogadores de um time
+    /// </summary>
+    [HttpGet("{teamId}/players")]
+    public async Task<IActionResult> GetAllPlayersByTeam(int teamId)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            return Unauthorized();
+
+        var teamExists = await _context.Teams.FirstOrDefaultAsync(t => t.Id == teamId && t.UserId == userId);
+
+        if (teamExists == null)
+            return NotFound(new {message = "Time não encontrado"});
+
+        var players = await _context.Players.Where(p => p.TeamId == teamId)
+            .Select(player => new PlayerResponseDto
+            {
+                Id = player.Id,
+                Name = player.Name,
+                Position = player.Position,
+                ShirtNumber = player.ShirtNumber,
+                Goals = player.Goals,
+                Assists = player.Assists,
+                MatchesPlayed = player.MatchesPlayed
+            }).ToListAsync();
+
+        return Ok(players);
+                                
     }
 
     /// <summary>
