@@ -167,7 +167,7 @@ public class PlayerController : ControllerBase
     public async Task<IActionResult> UpdateStats(int id, UpdatePlayerStatsDto dto)
     {
 
-        if(!ModelState.IsValid) 
+        if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -177,7 +177,7 @@ public class PlayerController : ControllerBase
 
         var player = await _context.Players.FirstOrDefaultAsync(p => p.Id == id && p.Team.UserId == userId);
 
-        if (player == null) 
+        if (player == null)
             return NotFound(new { message = "Jogador nao encontrado" });
 
         player.Goals = dto.Goals;
