@@ -29,4 +29,8 @@ public class MatchResponseDto
     /// Gols do adversario na partida.
     /// </summary>
     public int GoalsAgainst { get; set; }
+
+    public string Result =>
+        GoalsFor > GoalsAgainst ? "Win" :
+        GoalsFor < GoalsAgainst ? "Lost" : "Draw";
 }
