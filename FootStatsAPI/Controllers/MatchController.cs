@@ -83,7 +83,7 @@ public class MatchController : ControllerBase
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-            return Unauthorized();
+            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
 
         var match = await _context.Matches.Where(m => m.Id == id && m.Team.UserId == userId)
             .Select(match => new MatchResponseDto
@@ -93,7 +93,7 @@ public class MatchController : ControllerBase
                 OpponentTeam = match.OpponentTeam,
                 GoalsFor = match.GoalsFor,
                 GoalsAgainst = match.GoalsAgainst,
-            }).ToListAsync();
+            }).FirstOrDefaultAsync();
 
         if (match == null)
             return NotFound(new { message = "Partida não encontrada" });

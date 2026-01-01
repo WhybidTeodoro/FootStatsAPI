@@ -1,4 +1,5 @@
 ﻿using FootStatsAPI.Data;
+using FootStatsAPI.DTOs.Match;
 using FootStatsAPI.DTOs.Player;
 using FootStatsAPI.DTOs.Team;
 using FootStatsAPI.Models;
@@ -128,7 +129,7 @@ public class TeamController : ControllerBase
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-            return Unauthorized();
+            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
 
         var teamExists = await _context.Teams.FirstOrDefaultAsync(t => t.Id == teamId && t.UserId == userId);
 
@@ -149,6 +150,35 @@ public class TeamController : ControllerBase
 
         return Ok(players);
                                 
+    }
+
+    /// <summary>
+    /// Endpoint responsavel por retornar todas as partidas de um time do usuario
+    /// </summary>
+    [HttpGet("{teamid}/matches")]
+    public async Task<IActionResult> GetAllMatchesByTeam(int teamId)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            return Unauthorized();
+
+        var teamExists = await _context.Teams.FirstOrDefaultAsync(t => t.Id == teamId && t.UserId == userId);
+
+        if (teamExists == null)
+            return NotFound(new { message = "Time não encontrado" });
+
+        var matches = await _context.Matches.Where(m => m.TeamId == teamId)
+            .Select(matches => new MatchResponseDto
+            {
+                Id = matches.Id,
+                MatchDate = matches.MatchDate,
+                OpponentTeam = matches.OpponentTeam,
+                GoalsFor = matches.GoalsFor,
+                GoalsAgainst = matches.GoalsAgainst,
+            }).ToListAsync();
+
+        return Ok(matches);
     }
 
     /// <summary>
