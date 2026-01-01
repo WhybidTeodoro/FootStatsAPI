@@ -155,7 +155,7 @@ public class TeamController : ControllerBase
     /// <summary>
     /// Endpoint responsavel por retornar todas as partidas de um time do usuario
     /// </summary>
-    [HttpGet("{teamid}/matches")]
+    [HttpGet("{teamId}/matches")]
     public async Task<IActionResult> GetAllMatchesByTeam(int teamId)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
