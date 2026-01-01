@@ -141,4 +141,35 @@ public class MatchController : ControllerBase
 
         return Ok(response);
     }
+
+    /// <summary>
+    /// Endpoint responsavel por deletar uma partida especifica de um time do usuario
+    /// </summary>
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteMatch(int id)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            return Unauthorized();
+
+        var match = await _context.Matches.FirstOrDefaultAsync(m => m.Id == id && m.Team.UserId == userId);
+
+        if (match == null) 
+            return NotFound(new { message = "Partida não encontrada" });
+
+        try
+        {
+            _context.Matches.Remove(match);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+        catch (Exception)
+        {
+
+            return StatusCode(500, new { message = "Erro interno ao tentar excluir a partida" });
+        }
+        
+    }
 }
