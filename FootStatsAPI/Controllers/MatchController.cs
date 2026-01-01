@@ -62,7 +62,8 @@ public class MatchController : ControllerBase
                 MatchDate = match.MatchDate,
                 OpponentTeam = match.OpponentTeam,
                 GoalsFor = match.GoalsFor,
-                GoalsAgainst = match.GoalsAgainst
+                GoalsAgainst = match.GoalsAgainst,
+                TeamId = match.TeamId
             };
 
             return Created(string.Empty, response);
@@ -93,11 +94,51 @@ public class MatchController : ControllerBase
                 OpponentTeam = match.OpponentTeam,
                 GoalsFor = match.GoalsFor,
                 GoalsAgainst = match.GoalsAgainst,
+                TeamId = match.TeamId
             }).FirstOrDefaultAsync();
 
         if (match == null)
             return NotFound(new { message = "Partida não encontrada" });
 
         return Ok(match);
+    }
+
+    /// <summary>
+    /// Endpoint responsavel por atualizar uma partida especifica de um time do usuario
+    /// </summary>
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateMatch(int id, UpdateMatchDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
+
+        var match = await _context.Matches.FirstOrDefaultAsync(m => m.Id == id && m.Team.UserId == userId);
+
+        if (match == null) 
+            return NotFound(new { message = "Partida não encontrada" });
+
+        match.MatchDate = dto.MatchDate;
+        match.OpponentTeam = dto.OpponentTeam;
+        match.GoalsFor = dto.GoalsFor;
+        match.GoalsAgainst = dto.GoalsAgainst;
+
+        await _context.SaveChangesAsync();
+
+        var response = new MatchResponseDto
+        {
+            MatchDate = match.MatchDate,
+            OpponentTeam = match.OpponentTeam,
+            GoalsFor = dto.GoalsFor,
+            GoalsAgainst = dto.GoalsAgainst,
+            TeamId = match.TeamId
+            
+        };
+
+        return Ok(response);
     }
 }

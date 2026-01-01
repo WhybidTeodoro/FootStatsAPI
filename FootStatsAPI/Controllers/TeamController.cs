@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 namespace FootStatsAPI.Controllers;
 
@@ -176,6 +177,7 @@ public class TeamController : ControllerBase
                 OpponentTeam = matches.OpponentTeam,
                 GoalsFor = matches.GoalsFor,
                 GoalsAgainst = matches.GoalsAgainst,
+                TeamId = matches.TeamId
             }).ToListAsync();
 
         return Ok(matches);

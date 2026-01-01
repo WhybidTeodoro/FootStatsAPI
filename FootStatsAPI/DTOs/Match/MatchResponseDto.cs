@@ -30,6 +30,11 @@ public class MatchResponseDto
     /// </summary>
     public int GoalsAgainst { get; set; }
 
+    /// <summary>
+    /// Represente o time do usuario
+    /// </summary>
+    public int TeamId { get; set; }
+
     public string Result =>
         GoalsFor > GoalsAgainst ? "Win" :
         GoalsFor < GoalsAgainst ? "Lost" : "Draw";
