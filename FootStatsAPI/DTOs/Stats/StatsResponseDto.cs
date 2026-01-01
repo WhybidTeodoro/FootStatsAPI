@@ -38,5 +38,5 @@ public class StatsResponseDto
     /// <summary>
     /// Saldo de gols
     /// </summary>
-    public int GoalDifference { get; set; }
+    public int GoalDifference => TotalGoalsFor - TotalGoalsAgainst;
 }
