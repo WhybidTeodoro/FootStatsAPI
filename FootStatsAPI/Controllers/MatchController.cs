@@ -151,7 +151,7 @@ public class MatchController : ControllerBase
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-            return Unauthorized();
+            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
 
         var match = await _context.Matches.FirstOrDefaultAsync(m => m.Id == id && m.Team.UserId == userId);
 
