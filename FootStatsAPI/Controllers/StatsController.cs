@@ -22,7 +22,7 @@ public class StatsController : ControllerBase
         _context = context;
     }
 
-    [HttpGet("/teams{teamId}/stats")]
+    [HttpGet("/Team/{teamId}/stats")]
     public async Task<IActionResult> GetAllStatsByTeam(int teamId)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
