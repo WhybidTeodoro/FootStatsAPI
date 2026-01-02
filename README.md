@@ -19,7 +19,7 @@ Este projeto foi desenvolvido como parte do meu **processo de aprendizado em des
 
 ## 🔧 Tecnologias Utilizadas
 
-- **ASP.NET Core**
+- **ASP.NET Core (.Net 8.0)**
 - **C#**
 - **Entity Framework Core**
 - **MySql**
