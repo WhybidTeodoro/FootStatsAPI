@@ -3,6 +3,7 @@ using FootStatsAPI.DTOs.Match;
 using FootStatsAPI.DTOs.Player;
 using FootStatsAPI.DTOs.Team;
 using FootStatsAPI.Models;
+using FootStatsAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,9 +21,17 @@ public class TeamController : ControllerBase
 {
     private readonly FootDbContext _context;
 
+    private readonly TeamService _teamService;
+
+
     public TeamController(FootDbContext context)
     {
         _context = context;
+    }
+
+    public TeamController(TeamService teamService)
+    {
+        _teamService = teamService;
     }
 
     /// <summary>
@@ -39,31 +48,17 @@ public class TeamController : ControllerBase
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out var userId))
             return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
 
-        var teamAlreadyExists = await _context.Teams.AnyAsync(t => t.UserId == userId && t.Name == dto.Name);
-
-        if (teamAlreadyExists)
-            return BadRequest(new {message = "Você ja possui um time com esse nome"});
-
         try
         {
-            var team = new Team
-            {
-                Name = dto.Name,
-                UserId = userId,
-                CreatedAt = DateTime.UtcNow
-            };
-
-            _context.Teams.Add(team);
-            await _context.SaveChangesAsync();
-
-            var response = new TeamResponseDto
-            {
-                Id = team.Id,
-                Name = team.Name
-            };
-
-            return Created(string.Empty, response);
+            var result = await _teamService.AddTeamAsync(userId, dto);
+            return Created(string.Empty, result);
         }
+        catch(InvalidOperationException ex)
+        {
+            return NotFound(new {message = ex.Message});
+        }
+
+        
         catch (Exception)
         {
 
