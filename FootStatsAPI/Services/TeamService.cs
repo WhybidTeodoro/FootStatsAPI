@@ -55,7 +55,12 @@ public class TeamService : ITeamServices
 
     public async Task <List<TeamResponseDto>> GetAllAsync(int userId)
     {
-        throw new NotImplementedException();
+            return await _context.Teams.Where(t => t.UserId == userId)
+           .Select(teams => new TeamResponseDto
+           {
+               Id = teams.Id,
+               Name = teams.Name
+           }).ToListAsync();
     }
 
     public Task<TeamResponseDto> GetAllMatchessByTeamAsync(int userId, int teamId)

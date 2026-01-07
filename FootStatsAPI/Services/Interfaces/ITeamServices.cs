@@ -6,7 +6,7 @@ public interface ITeamServices
 {
     Task<TeamResponseDto> AddTeamAsync(int userId, CreateTeamDto dto);
 
-    Task<TeamResponseDto> GetAllAsync(int userId);
+    Task<List<TeamResponseDto>> GetAllAsync(int userId);
 
     Task<TeamResponseDto> GetByIdAsync(int userId, int id);
 

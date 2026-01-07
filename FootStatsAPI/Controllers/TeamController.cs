@@ -24,13 +24,9 @@ public class TeamController : ControllerBase
     private readonly TeamService _teamService;
 
 
-    public TeamController(FootDbContext context)
+    public TeamController(FootDbContext context, TeamService teamService)
     {
         _context = context;
-    }
-
-    public TeamController(TeamService teamService)
-    {
         _teamService = teamService;
     }
 
@@ -78,14 +74,9 @@ public class TeamController : ControllerBase
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
             return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
 
-            var teams = await _context.Teams.Where(team => team.UserId == userId)
-                .Select(team => new TeamResponseDto
-                {
-                    Id = team.Id,
-                    Name = team.Name
-                }).ToListAsync();
+        var teams = await _teamService.GetAllAsync(userId);
 
-            return Ok(teams);
+        return Ok(teams);
         
     }
 

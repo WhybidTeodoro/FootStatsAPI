@@ -1,4 +1,6 @@
 using FootStatsAPI.Data;
+using FootStatsAPI.Services;
+using FootStatsAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -16,6 +18,8 @@ builder.Services.AddDbContext<FootDbContext>(options =>
 
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 });
+
+builder.Services.AddScoped<TeamService>();
 
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
