@@ -91,19 +91,12 @@ public class TeamController : ControllerBase
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
             return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
 
-        var response = await _context.Teams.Where(team => team.Id == id && team.UserId == userId)
-                    .Select(team => new TeamResponseDto
-                    {
-                        Id = team.Id,
-                        Name = team.Name
-                    }).FirstOrDefaultAsync();
+        var result = await _teamService.GetByIdAsync(userId, id);
 
-        if (response == null)
+        if (result == null)
             return NotFound(new { message = "Time não encontrado" });
          
-
-        return Ok(response);
-     
+        return Ok(result);
     }
 
     /// <summary>

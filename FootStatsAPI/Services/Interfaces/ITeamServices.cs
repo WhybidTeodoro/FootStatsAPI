@@ -1,4 +1,5 @@
-﻿using FootStatsAPI.DTOs.Team;
+﻿using FootStatsAPI.DTOs.Player;
+using FootStatsAPI.DTOs.Team;
 
 namespace FootStatsAPI.Services.Interfaces;
 
@@ -10,7 +11,7 @@ public interface ITeamServices
 
     Task<TeamResponseDto> GetByIdAsync(int userId, int id);
 
-    Task<TeamResponseDto> GetAllPlayersByTeamAsync(int userId, int teamId);
+    Task<List<PlayerResponseDto>> GetAllPlayersByTeamAsync(int userId, int teamId);
 
     Task<TeamResponseDto> GetAllMatchessByTeamAsync(int userId, int teamId);
 

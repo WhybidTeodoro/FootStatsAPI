@@ -1,4 +1,5 @@
 ﻿using FootStatsAPI.Data;
+using FootStatsAPI.DTOs.Player;
 using FootStatsAPI.DTOs.Team;
 using FootStatsAPI.Models;
 using FootStatsAPI.Services.Interfaces;
@@ -68,14 +69,21 @@ public class TeamService : ITeamServices
         throw new NotImplementedException();
     }
 
-    public Task<TeamResponseDto> GetAllPlayersByTeamAsync(int userId, int teamId)
+    public async Task<List<PlayerResponseDto>> GetAllPlayersByTeamAsync(int userId, int teamId)
     {
         throw new NotImplementedException();
     }
 
-    public Task<TeamResponseDto> GetByIdAsync(int userId, int id)
+    public async Task<TeamResponseDto> GetByIdAsync(int userId, int id)
     {
-        throw new NotImplementedException();
+        var team =  await _context.Teams.Where(t => t.Id == id && t.UserId == userId)
+                    .Select(t => new TeamResponseDto
+                    {
+                        Id = t.Id,
+                        Name = t.Name
+                    }).FirstOrDefaultAsync();
+
+        return (team!);
     }
 
     public Task<TeamResponseDto> UpdateTeamAsync(int userId, UpdateTeamDto dto)
