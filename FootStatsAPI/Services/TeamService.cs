@@ -71,7 +71,23 @@ public class TeamService : ITeamServices
 
     public async Task<List<PlayerResponseDto>> GetAllPlayersByTeamAsync(int userId, int teamId)
     {
-        throw new NotImplementedException();
+
+        var teamExists = await _context.Teams.FirstOrDefaultAsync(t => t.Id == teamId && t.UserId == userId);
+
+        if (teamExists == null)
+            throw new InvalidOperationException("Time não encontrado");
+
+        return await _context.Players.Where(p => p.TeamId == teamId && p.Team.UserId == userId)
+                    .Select(p => new PlayerResponseDto
+                    {
+                        Id = p.Id,
+                        Name = p.Name,
+                        Position = p.Position,
+                        ShirtNumber = p.ShirtNumber,
+                        MatchesPlayed = p.MatchesPlayed,
+                        Goals = p.Goals,
+                        Assists = p.Assists,
+                    }).ToListAsync();
     }
 
     public async Task<TeamResponseDto> GetByIdAsync(int userId, int id)
