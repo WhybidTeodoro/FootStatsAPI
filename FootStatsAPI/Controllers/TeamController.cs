@@ -4,6 +4,7 @@ using FootStatsAPI.DTOs.Player;
 using FootStatsAPI.DTOs.Team;
 using FootStatsAPI.Models;
 using FootStatsAPI.Services;
+using FootStatsAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,14 +20,11 @@ namespace FootStatsAPI.Controllers;
 [Authorize]
 public class TeamController : ControllerBase
 {
-    private readonly FootDbContext _context;
-
-    private readonly TeamService _teamService;
+    private readonly ITeamServices _teamService;
 
 
-    public TeamController(FootDbContext context, TeamService teamService)
+    public TeamController(ITeamServices teamService)
     {
-        _context = context;
         _teamService = teamService;
     }
 
@@ -51,7 +49,7 @@ public class TeamController : ControllerBase
         }
         catch(InvalidOperationException ex)
         {
-            return NotFound(new {message = ex.Message});
+            return BadRequest(new {message = ex.Message});
         }
 
         
@@ -91,12 +89,18 @@ public class TeamController : ControllerBase
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
             return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
 
-        var result = await _teamService.GetByIdAsync(userId, id);
+        try
+        {
+            var team = await _teamService.GetByIdAsync(userId, id);
 
-        if (result == null)
-            return NotFound(new { message = "Time não encontrado" });
-         
-        return Ok(result);
+            return Ok(team);
+        }
+        catch (InvalidOperationException ex)
+        {
+
+            return NotFound(new {message = ex.Message});
+        }
+    
     }
 
     /// <summary>
@@ -115,10 +119,10 @@ public class TeamController : ControllerBase
             var players = await _teamService.GetAllPlayersByTeamAsync(userId, teamId);
             return Ok(players);
         }
-        catch (InvalidOperationException)
+        catch (InvalidOperationException ex)
         {
 
-            return NotFound(new { message = "Time não encontrado" });
+            return NotFound(new { message = ex.Message });
         }
                                        
     }
@@ -135,14 +139,14 @@ public class TeamController : ControllerBase
             return Unauthorized();
         try
         {
-            var matches = await _teamService.GetAllMatchessByTeamAsync(userId, teamId);
+            var matches = await _teamService.GetAllMatchesByTeamAsync(userId, teamId);
 
             return Ok(matches);
         }
-        catch (InvalidOperationException)
+        catch (InvalidOperationException ex)
         {
 
-            return NotFound(new { message = "Time não encontrado" });
+            return NotFound(new { message = ex.Message });
         }
     }
 
@@ -163,10 +167,10 @@ public class TeamController : ControllerBase
 
             return Ok(team);
         }
-        catch (InvalidOperationException)
+        catch (InvalidOperationException ex)
         {
 
-            return NotFound(new { message = "Time não encontrado" });
+            return NotFound(new { message = ex.Message });
         }
     }
 
@@ -186,10 +190,10 @@ public class TeamController : ControllerBase
 
             return NoContent();
         }
-        catch (InvalidOperationException)
+        catch (InvalidOperationException ex)
         {
 
-            return NotFound(new { message = "Time não encontrado" });
+            return NotFound(new { message = ex.Message });
         }
     }
 }

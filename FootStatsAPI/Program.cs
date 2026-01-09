@@ -19,7 +19,7 @@ builder.Services.AddDbContext<FootDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 });
 
-builder.Services.AddScoped<TeamService>();
+builder.Services.AddScoped<ITeamServices, TeamService>();
 
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
