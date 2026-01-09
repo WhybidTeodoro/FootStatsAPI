@@ -50,12 +50,15 @@ public class TeamService : ITeamServices
         }
     }
 
-    public Task DeleteTeamAsync(int userId, int id)
+    public async Task DeleteTeamAsync(int userId, int id)
     {
         var team = _context.Teams.FirstOrDefault(t => t.UserId == userId && t.Id == id);
 
         if (team == null)
             throw new InvalidOperationException("Time não encontrado");
+
+        _context.Teams.Remove(team);
+        await _context.SaveChangesAsync();
     }
 
     public async Task <List<TeamResponseDto>> GetAllAsync(int userId)

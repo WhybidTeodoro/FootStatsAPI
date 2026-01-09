@@ -180,22 +180,16 @@ public class TeamController : ControllerBase
 
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
             return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
-        var team = await _context.Teams.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
-
-        if (team == null)
-            return NotFound(new { message = "Time não encontrado" });
-
         try
-        { 
-            _context.Teams.Remove(team);
-            await _context.SaveChangesAsync();
+        {
+             await _teamService.DeleteTeamAsync(userId, id);
 
             return NoContent();
         }
-        catch (Exception)
+        catch (InvalidOperationException)
         {
 
-            return StatusCode(500, new { message = "Erro interno ao tentar excluir o time" });
+            return NotFound(new { message = "Time não encontrado" });
         }
     }
 }
