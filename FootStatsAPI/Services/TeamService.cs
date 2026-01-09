@@ -1,4 +1,5 @@
 ﻿using FootStatsAPI.Data;
+using FootStatsAPI.DTOs.Match;
 using FootStatsAPI.DTOs.Player;
 using FootStatsAPI.DTOs.Team;
 using FootStatsAPI.Models;
@@ -64,9 +65,22 @@ public class TeamService : ITeamServices
            }).ToListAsync();
     }
 
-    public Task<TeamResponseDto> GetAllMatchessByTeamAsync(int userId, int teamId)
+    public async Task<List<MatchResponseDto>> GetAllMatchessByTeamAsync(int userId, int teamId)
     {
-        throw new NotImplementedException();
+        var teamExists = await _context.Teams.FirstOrDefaultAsync(t => t.Id == teamId && t.UserId == userId);
+
+        if (teamExists == null)
+            throw new InvalidOperationException("Time não encontrado");
+
+        return await _context.Matches.Where(m => m.TeamId == teamId && m.Team.UserId == userId)
+            .Select(m => new MatchResponseDto
+            {
+                Id = m.Id,
+                MatchDate = m.MatchDate,
+                OpponentTeam = m.OpponentTeam,
+                GoalsFor = m.GoalsFor,
+                GoalsAgainst = m.GoalsAgainst
+            }).ToListAsync();
     }
 
     public async Task<List<PlayerResponseDto>> GetAllPlayersByTeamAsync(int userId, int teamId)
@@ -86,7 +100,7 @@ public class TeamService : ITeamServices
                         ShirtNumber = p.ShirtNumber,
                         MatchesPlayed = p.MatchesPlayed,
                         Goals = p.Goals,
-                        Assists = p.Assists,
+                        Assists = p.Assists
                     }).ToListAsync();
     }
 

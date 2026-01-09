@@ -133,24 +133,17 @@ public class TeamController : ControllerBase
 
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
             return Unauthorized();
+        try
+        {
+            var matches = await _teamService.GetAllMatchessByTeamAsync(userId, teamId);
 
-        var teamExists = await _context.Teams.FirstOrDefaultAsync(t => t.Id == teamId && t.UserId == userId);
+            return Ok(matches);
+        }
+        catch (InvalidOperationException)
+        {
 
-        if (teamExists == null)
             return NotFound(new { message = "Time não encontrado" });
-
-        var matches = await _context.Matches.Where(m => m.TeamId == teamId)
-            .Select(matches => new MatchResponseDto
-            {
-                Id = matches.Id,
-                MatchDate = matches.MatchDate,
-                OpponentTeam = matches.OpponentTeam,
-                GoalsFor = matches.GoalsFor,
-                GoalsAgainst = matches.GoalsAgainst,
-                TeamId = matches.TeamId
-            }).ToListAsync();
-
-        return Ok(matches);
+        }
     }
 
     /// <summary>
