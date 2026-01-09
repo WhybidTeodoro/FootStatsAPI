@@ -16,7 +16,7 @@ public interface ITeamServices
 
     Task<List<MatchResponseDto>> GetAllMatchessByTeamAsync(int userId, int teamId);
 
-    Task<TeamResponseDto> UpdateTeamAsync(int userId, UpdateTeamDto dto);
+    Task<TeamResponseDto> UpdateTeamAsync(int userId,int id, UpdateTeamDto dto);
 
-    Task<TeamResponseDto> DeleteTeamAsync(int userId, int id);
+    Task DeleteTeamAsync(int userId, int id);
 }

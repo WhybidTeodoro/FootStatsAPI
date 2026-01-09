@@ -157,23 +157,17 @@ public class TeamController : ControllerBase
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
             return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
 
-     
-            var team = await _context.Teams.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+        try
+        {
+            var team = await _teamService.UpdateTeamAsync(userId, id, dto);
 
-            if (team == null)
-                return NotFound(new { message = "Time não encontrado" });
+            return Ok(team);
+        }
+        catch (InvalidOperationException)
+        {
 
-            team.Name = dto.Name;
-
-            await _context.SaveChangesAsync();
-
-            var response = new TeamResponseDto
-            {
-                Id = team.Id,
-                Name = team.Name
-            };
-
-            return Ok(response);
+            return NotFound(new { message = "Time não encontrado" });
+        }
     }
 
     /// <summary>

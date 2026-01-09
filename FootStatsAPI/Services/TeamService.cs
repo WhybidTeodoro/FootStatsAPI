@@ -50,9 +50,12 @@ public class TeamService : ITeamServices
         }
     }
 
-    public Task<TeamResponseDto> DeleteTeamAsync(int userId, int id)
+    public Task DeleteTeamAsync(int userId, int id)
     {
-        throw new NotImplementedException();
+        var team = _context.Teams.FirstOrDefault(t => t.UserId == userId && t.Id == id);
+
+        if (team == null)
+            throw new InvalidOperationException("Time não encontrado");
     }
 
     public async Task <List<TeamResponseDto>> GetAllAsync(int userId)
@@ -116,8 +119,26 @@ public class TeamService : ITeamServices
         return (team!);
     }
 
-    public Task<TeamResponseDto> UpdateTeamAsync(int userId, UpdateTeamDto dto)
+    public async Task<TeamResponseDto> UpdateTeamAsync(int userId, int id, UpdateTeamDto dto)
     {
-        throw new NotImplementedException();
+        var team = await _context.Teams.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+
+        if (team == null)
+        {
+            throw new InvalidOperationException("Time não encontrado");
+        }
+        else
+        {
+            team.Name = dto.Name;
+            
+            await _context.SaveChangesAsync();
+
+            return new TeamResponseDto
+            {
+                Id = team.Id,
+                Name = team.Name
+            };
+        }
+            
     }
 }
