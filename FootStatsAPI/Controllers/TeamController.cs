@@ -20,10 +20,10 @@ namespace FootStatsAPI.Controllers;
 [Authorize]
 public class TeamController : ControllerBase
 {
-    private readonly ITeamServices _teamService;
+    private readonly ITeamService _teamService;
 
 
-    public TeamController(ITeamServices teamService)
+    public TeamController(ITeamService teamService)
     {
         _teamService = teamService;
     }

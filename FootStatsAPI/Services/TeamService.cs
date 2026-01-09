@@ -11,7 +11,7 @@ namespace FootStatsAPI.Services;
 /// <summary>
 /// Service que implementa a regra de negocio para a entidade Team
 /// </summary>
-public class TeamService : ITeamServices
+public class TeamService : ITeamService
 {
 
     private readonly FootDbContext _context;

@@ -7,7 +7,7 @@ namespace FootStatsAPI.Services.Interfaces;
 /// <summary>
 /// Interface para implementação das regras de negocio para a entidade Team
 /// </summary>
-public interface ITeamServices
+public interface ITeamService
 {
 
     /// <summary>
