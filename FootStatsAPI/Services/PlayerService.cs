@@ -57,9 +57,25 @@ public class PlayerService : IPlayerService
         };
     }
 
-    public Task<PlayerResponseDto> GetByIdAsync(int id, int userId)
+    public async Task<PlayerResponseDto> GetByIdAsync(int id, int userId)
     {
-        throw new NotImplementedException();
+        var player = await _context.Players.Where(p =>  p.Id == id && p.Team.UserId == userId)
+            .Select(p => new PlayerResponseDto
+            {
+                Name = p.Name,
+                Position = p.Position,
+                ShirtNumber = p.ShirtNumber,
+                Goals= p.Goals,
+                Assists = p.Assists,
+                MatchesPlayed= p.MatchesPlayed
+            }).FirstOrDefaultAsync();
+
+        if (player == null)
+            throw new InvalidOperationException("Jogador não registrado");
+
+        return (player);
+
+
     }
 
     public Task<PlayerResponseDto> UpdatePlayerProfileAsync(int id, int userId, UpdatePlayerProfileDto dto)
