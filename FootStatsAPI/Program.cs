@@ -20,6 +20,7 @@ builder.Services.AddDbContext<FootDbContext>(options =>
 });
 
 builder.Services.AddScoped<ITeamService, TeamService>();
+builder.Services.AddScoped<IPlayerService, PlayerService>();
 
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
