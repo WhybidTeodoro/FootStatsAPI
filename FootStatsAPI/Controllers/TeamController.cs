@@ -49,7 +49,7 @@ public class TeamController : ControllerBase
         }
         catch(InvalidOperationException ex)
         {
-            return BadRequest(new {message = ex.Message});
+            return BadRequest(ex.Message);
         }
 
         
@@ -98,7 +98,7 @@ public class TeamController : ControllerBase
         catch (InvalidOperationException ex)
         {
 
-            return NotFound(new {message = ex.Message});
+            return NotFound(ex.Message);
         }
     
     }
@@ -122,7 +122,7 @@ public class TeamController : ControllerBase
         catch (InvalidOperationException ex)
         {
 
-            return NotFound(new { message = ex.Message });
+            return NotFound(ex.Message);
         }
                                        
     }
@@ -146,7 +146,7 @@ public class TeamController : ControllerBase
         catch (InvalidOperationException ex)
         {
 
-            return NotFound(new { message = ex.Message });
+            return NotFound(ex.Message);
         }
     }
 
@@ -170,7 +170,7 @@ public class TeamController : ControllerBase
         catch (InvalidOperationException ex)
         {
 
-            return NotFound(new { message = ex.Message });
+            return NotFound(ex.Message);
         }
     }
 
@@ -193,7 +193,7 @@ public class TeamController : ControllerBase
         catch (InvalidOperationException ex)
         {
 
-            return NotFound(new { message = ex.Message });
+            return NotFound(ex.Message);
         }
     }
 }

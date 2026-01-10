@@ -49,7 +49,7 @@ public class PlayerController : ControllerBase
         catch (InvalidOperationException ex)
         {
 
-            return NotFound(new {message = ex.Message});
+            return NotFound(ex.Message);
         }
         catch (Exception)
         {
@@ -78,7 +78,7 @@ public class PlayerController : ControllerBase
         catch (InvalidOperationException ex)
         {
 
-            return NotFound(new {message = ex});
+            return NotFound(ex.Message);
         }
         
     }
@@ -97,30 +97,19 @@ public class PlayerController : ControllerBase
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
             return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
 
-        var player = await _context.Players.FirstOrDefaultAsync(p => p.Id == id && p.Team.UserId == userId);
+        try
+        {
+            var player = await _playerService.UpdatePlayerProfileAsync(id, userId, dto);
+    
+            return Ok(player);
 
-        if (player == null)
-            return NotFound(new { message = "Jogador não encontrado" });
+        }
+        catch (InvalidOperationException ex)
+        {
 
+            return NotFound(ex.Message);
+        }
         
-            player.Name = dto.Name;
-            player.Position = dto.Position;
-            player.ShirtNumber = dto.ShirtNumber;
-
-            await _context.SaveChangesAsync();
-
-            var response = new PlayerResponseDto
-            {
-                Id = id,
-                Name = player.Name,
-                Position = player.Position,
-                ShirtNumber = player.ShirtNumber,
-                Goals = player.Goals,
-                Assists = player.Assists,
-                MatchesPlayed = player.MatchesPlayed
-            };
-
-        return Ok(response); 
    
     }
 

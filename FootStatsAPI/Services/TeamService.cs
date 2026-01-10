@@ -77,7 +77,7 @@ public class TeamService : ITeamService
         if (team == null)
             throw new InvalidOperationException("Time não existe");
 
-        return (team);
+        return team;
     }
 
     /// <summary>

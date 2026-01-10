@@ -73,14 +73,34 @@ public class PlayerService : IPlayerService
         if (player == null)
             throw new InvalidOperationException("Jogador não registrado");
 
-        return (player);
+        return player;
 
 
     }
 
-    public Task<PlayerResponseDto> UpdatePlayerProfileAsync(int id, int userId, UpdatePlayerProfileDto dto)
+    public async Task<PlayerResponseDto> UpdatePlayerProfileAsync(int id, int userId, UpdatePlayerProfileDto dto)
     {
-        throw new NotImplementedException();
+        var player = await _context.Players.FirstOrDefaultAsync(p => p.Id == id && p.Team.UserId == userId);
+
+        if (player == null)
+            throw new InvalidOperationException("Jogador não registrado");
+
+
+        player.Name = dto.Name;
+        player.Position = dto.Position;
+        player.ShirtNumber = dto.ShirtNumber;
+        
+        await _context.SaveChangesAsync();
+
+        return new PlayerResponseDto
+        {
+            Name = player.Name,
+            Position = player.Position,
+            ShirtNumber = player.ShirtNumber,
+            Goals = player.Goals,
+            Assists = player.Assists,
+            MatchesPlayed = player.MatchesPlayed
+        };
     }
 
     public Task<PlayerResponseDto> UpdatePlayerStatsAsync(int id, int userId, UpdatePlayerStatsDto dto)
