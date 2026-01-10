@@ -1,5 +1,6 @@
 ﻿using FootStatsAPI.Data;
 using FootStatsAPI.DTOs.Player;
+using FootStatsAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,9 +18,12 @@ public class PlayerController : ControllerBase
 {
     private readonly FootDbContext _context;
 
-    public PlayerController(FootDbContext context)
+    private readonly IPlayerService _playerService;
+
+    public PlayerController(FootDbContext context, IPlayerService playerService)
     {
         _context = context;
+        _playerService = playerService;
     }
 
     /// <summary>
@@ -36,57 +40,20 @@ public class PlayerController : ControllerBase
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
             return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
 
-        var team = await _context.Teams.FirstOrDefaultAsync(t => t.Id == dto.TeamId && t.UserId == userId);
-
-        if (team == null)
-            return NotFound(new { message = "O Time não existe" });
-
-
         try
         {
-            var player = new Player
-            {
-                Name = dto.Name,
-                Position = dto.Position,
-                ShirtNumber = dto.ShirtNumber,
-                Goals = dto.Goals,
-                Assists = dto.Assists,
-                MatchesPlayed = dto.MatchesPlayed,
-                TeamId = dto.TeamId,
-                CreatedAt = DateTime.UtcNow
+            var player = await _playerService.AddPlayerAsync(userId, dto);
 
-            };
+            return Created(string.Empty, player);
+        }
+        catch (InvalidOperationException ex)
+        {
 
-            var playerAlreadyExists = await _context.Players
-                .AnyAsync(p => p.Name == player.Name 
-                && p.Position == player.Position
-                && p.ShirtNumber == player.ShirtNumber 
-                && p.TeamId == player.TeamId);
-
-            if (playerAlreadyExists)
-                return BadRequest(new { message = "Jogador já cadastrado neste time" });
-
-            _context.Players.Add(player);
-            await _context.SaveChangesAsync();
-
-            var response = new PlayerResponseDto
-            {
-                Id = player.Id,
-                Name = player.Name,
-                Position = player.Position,
-                ShirtNumber = player.ShirtNumber,
-                Goals = player.Goals,
-                Assists = player.Assists,
-                MatchesPlayed = player.MatchesPlayed
-            };
-
-            return Created(string.Empty, response);
-
+            return NotFound(new {message = ex.Message});
         }
         catch (Exception)
         {
-
-            return StatusCode(500, new { message = "Erro interno ao tentar criar o jogador" });
+            return StatusCode(500, new { message = "Erro interno ao tentar adicionar o jogador" });
         }
     }
 
