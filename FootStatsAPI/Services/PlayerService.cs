@@ -130,8 +130,14 @@ public class PlayerService : IPlayerService
             MatchesPlayed = player.MatchesPlayed
         };
     }
-    public Task DeletePlayerAsync(int id, int userId)
+    public async Task DeletePlayerAsync(int id, int userId)
     {
-        throw new NotImplementedException();
+        var player = await _context.Players.FirstOrDefaultAsync(p => p.Id == id && p.Team.UserId == userId);
+
+        if (player == null)
+            throw new InvalidOperationException("Jogador não registrado");
+
+        _context.Players.Remove(player);
+        await _context.SaveChangesAsync();
     }
 }

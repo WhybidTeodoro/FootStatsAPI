@@ -152,22 +152,16 @@ public class PlayerController : ControllerBase
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
             return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
 
-        var player = await _context.Players.FirstOrDefaultAsync(p => p.Id == id && p.Team.UserId == userId);
-
-        if (player == null) 
-            return NotFound(new { message = "Jogador não encontrado" });
-
         try
         {
-            _context.Players.Remove(player);
-            await _context.SaveChangesAsync();
+            await _playerService.DeletePlayerAsync(id, userId);
 
             return NoContent();
         }
-        catch (Exception)
+        catch (InvalidOperationException ex)
         {
+            return NotFound(ex.Message);
 
-            return StatusCode(500, new { message = "Erro interno ao tentar deletar jogador" });
         }
     }
 }
