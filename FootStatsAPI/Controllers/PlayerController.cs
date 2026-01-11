@@ -87,7 +87,7 @@ public class PlayerController : ControllerBase
     /// Endpoint responsavel por atualizar os dados de perfil do jogador
     /// </summary>
     [HttpPut("{id}/profile")]
-    public async Task<IActionResult> UpdateProfile(int id, UpdatePlayerProfileDto dto)
+    public async Task<IActionResult> UpdatePLayerProfile(int id, UpdatePlayerProfileDto dto)
     {
         if(!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -117,7 +117,7 @@ public class PlayerController : ControllerBase
     /// Endpoint responsavel por atualizar as estatisticas do jogador
     /// </summary>
     [HttpPut("{id}/stats")]
-    public async Task<IActionResult> UpdateStats(int id, UpdatePlayerStatsDto dto)
+    public async Task<IActionResult> UpdatePlayerStats(int id, UpdatePlayerStatsDto dto)
     {
 
         if (!ModelState.IsValid)
