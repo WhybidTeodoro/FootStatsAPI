@@ -64,9 +64,29 @@ public class MatchService : IMatchService
         return match;
     }
 
-    public Task<MatchResponseDto> UpdateMatchAsync(int userId, int id, UpdateMatchDto dto)
+    public async Task<MatchResponseDto> UpdateMatchAsync(int userId, int id, UpdateMatchDto dto)
     {
-        throw new NotImplementedException();
+        var match = await _context.Matches.FirstOrDefaultAsync(m => m.Team.UserId == userId && m.Id == id);
+
+        if (match == null)
+            throw new InvalidOperationException("Partida não encontrada");
+
+        match.MatchDate = dto.MatchDate;
+        match.OpponentTeam = dto.OpponentTeam;
+        match.GoalsFor = dto.GoalsFor;
+        match.GoalsAgainst = dto.GoalsAgainst;
+
+        await _context.SaveChangesAsync();
+
+        return new MatchResponseDto
+        {
+            Id = match.Id,
+            MatchDate = match.MatchDate,
+            OpponentTeam = match.OpponentTeam,
+            GoalsFor = match.GoalsFor,
+            GoalsAgainst = match.GoalsAgainst,
+            TeamId = match.TeamId
+        };
     }
     
     public Task DeleteMatchAsync(int userId, int id)
