@@ -45,9 +45,23 @@ public class MatchService : IMatchService
         };
     }
 
-    public Task<MatchResponseDto> GetByIdAsync(int userId, int id)
+    public async Task<MatchResponseDto> GetByIdAsync(int userId, int id)
     {
-        throw new NotImplementedException();
+        var match = await _context.Matches.Where(m => m.Team.UserId == userId && m.Id == id)
+            .Select(m => new MatchResponseDto
+            {
+                Id = m.Id,
+                MatchDate = m.MatchDate,
+                OpponentTeam = m.OpponentTeam,
+                GoalsFor = m.GoalsFor,
+                GoalsAgainst = m.GoalsAgainst,
+                TeamId = m.TeamId
+            }).FirstOrDefaultAsync();
+
+        if (match == null)
+            throw new InvalidOperationException("Partida não encontrada");
+
+        return match;
     }
 
     public Task<MatchResponseDto> UpdateMatchAsync(int userId, int id, UpdateMatchDto dto)

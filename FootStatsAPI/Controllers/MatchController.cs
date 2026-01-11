@@ -68,21 +68,16 @@ public class MatchController : ControllerBase
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
             return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
 
-        var match = await _context.Matches.Where(m => m.Id == id && m.Team.UserId == userId)
-            .Select(match => new MatchResponseDto
-            {
-                Id = match.Id,
-                MatchDate = match.MatchDate,
-                OpponentTeam = match.OpponentTeam,
-                GoalsFor = match.GoalsFor,
-                GoalsAgainst = match.GoalsAgainst,
-                TeamId = match.TeamId
-            }).FirstOrDefaultAsync();
+        try
+        {
+            var match = await _matchService.GetByIdAsync(userId, id);
 
-        if (match == null)
-            return NotFound(new { message = "Partida não encontrada" });
-
-        return Ok(match);
+            return Ok(match);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(ex.Message);
+        }
     }
 
     /// <summary>
