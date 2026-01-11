@@ -128,29 +128,17 @@ public class PlayerController : ControllerBase
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
             return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
 
-        var player = await _context.Players.FirstOrDefaultAsync(p => p.Id == id && p.Team.UserId == userId);
-
-        if (player == null)
-            return NotFound(new { message = "Jogador não encontrado" });
-
-        player.Goals = dto.Goals;
-        player.Assists = dto.Assists;
-        player.MatchesPlayed = dto.MatchesPlayed;
-
-        await _context.SaveChangesAsync();
-
-        var response = new PlayerResponseDto
+        try
         {
-            Id = id,
-            Name = player.Name,
-            Position = player.Position,
-            ShirtNumber = player.ShirtNumber,
-            Goals = player.Goals,
-            Assists = player.Assists,
-            MatchesPlayed = player.MatchesPlayed
-        };
+            var player = await _playerService.UpdatePlayerStatsAsync(id, userId, dto);
 
-        return Ok(response);
+            return Ok(player);
+        }
+        catch (InvalidOperationException ex)
+        {
+
+            return NotFound(ex.Message);
+        }
     }
 
     /// <summary>

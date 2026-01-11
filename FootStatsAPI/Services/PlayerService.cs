@@ -48,6 +48,7 @@ public class PlayerService : IPlayerService
 
         return new PlayerResponseDto
         {
+            Id = player.Id,
             Name = player.Name,
             Position = player.Position,
             ShirtNumber = player.ShirtNumber,
@@ -62,6 +63,7 @@ public class PlayerService : IPlayerService
         var player = await _context.Players.Where(p =>  p.Id == id && p.Team.UserId == userId)
             .Select(p => new PlayerResponseDto
             {
+                Id = p.Id,
                 Name = p.Name,
                 Position = p.Position,
                 ShirtNumber = p.ShirtNumber,
@@ -94,6 +96,7 @@ public class PlayerService : IPlayerService
 
         return new PlayerResponseDto
         {
+            Id = id,
             Name = player.Name,
             Position = player.Position,
             ShirtNumber = player.ShirtNumber,
@@ -103,9 +106,29 @@ public class PlayerService : IPlayerService
         };
     }
 
-    public Task<PlayerResponseDto> UpdatePlayerStatsAsync(int id, int userId, UpdatePlayerStatsDto dto)
+    public async Task<PlayerResponseDto> UpdatePlayerStatsAsync(int id, int userId, UpdatePlayerStatsDto dto)
     {
-        throw new NotImplementedException();
+        var player = await _context.Players.FirstOrDefaultAsync(p => p.Id == id && p.Team.UserId == userId);
+
+        if (player == null)
+            throw new InvalidOperationException("Jogador não registrado");
+
+        player.Goals = dto.Goals;
+        player.Assists = dto.Assists;
+        player.MatchesPlayed = dto.MatchesPlayed;
+
+        await _context.SaveChangesAsync();
+
+        return new PlayerResponseDto
+        {
+            Id = id,
+            Name = player.Name,
+            Position = player.Position,
+            ShirtNumber = player.ShirtNumber,
+            Goals = player.Goals,
+            Assists = player.Assists,
+            MatchesPlayed = player.MatchesPlayed
+        };
     }
     public Task DeletePlayerAsync(int id, int userId)
     {
