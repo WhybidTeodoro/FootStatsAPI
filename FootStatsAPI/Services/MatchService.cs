@@ -6,6 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FootStatsAPI.Services;
 
+/// <summary>
+/// Service que implementa a regra de negocio para a entidade Match
+/// </summary>
 public class MatchService : IMatchService
 {
     private readonly FootDbContext _context;
@@ -15,6 +18,9 @@ public class MatchService : IMatchService
         _context = context;
     }
 
+    /// <summary>
+    /// Adiciona um jogador a um time do usuario
+    /// </summary>
     public async Task<MatchResponseDto> AddMatchAsync(int userId, CreateMatchDto dto)
     {
         var teamExists = await _context.Teams.FirstOrDefaultAsync(t => t.UserId == userId && t.Id == dto.TeamId);
@@ -45,6 +51,9 @@ public class MatchService : IMatchService
         };
     }
 
+    /// <summary>
+    /// Retorna uma partida de um time do usuario
+    /// </summary>
     public async Task<MatchResponseDto> GetByIdAsync(int userId, int id)
     {
         var match = await _context.Matches.Where(m => m.Team.UserId == userId && m.Id == id)
@@ -64,6 +73,9 @@ public class MatchService : IMatchService
         return match;
     }
 
+    /// <summary>
+    /// Atualiza uma partida de um time do usuario
+    /// </summary>
     public async Task<MatchResponseDto> UpdateMatchAsync(int userId, int id, UpdateMatchDto dto)
     {
         var match = await _context.Matches.FirstOrDefaultAsync(m => m.Team.UserId == userId && m.Id == id);
@@ -88,9 +100,18 @@ public class MatchService : IMatchService
             TeamId = match.TeamId
         };
     }
-    
-    public Task DeleteMatchAsync(int userId, int id)
+
+    /// <summary>
+    /// Deleta uuma partida de um time do usuario
+    /// </summary>
+    public async Task DeleteMatchAsync(int userId, int id)
     {
-        throw new NotImplementedException();
+        var match = await _context.Matches.FirstOrDefaultAsync(m => m.Team.UserId == userId && m.Id == id);
+
+        if (match == null)
+            throw new InvalidOperationException("Partida não encontrada");
+
+        _context.Matches.Remove(match);
+        await _context.SaveChangesAsync();
     }
 }
