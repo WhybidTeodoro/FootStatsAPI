@@ -2,15 +2,33 @@
 
 namespace FootStatsAPI.Services.Interfaces;
 
+/// <summary>
+/// Interface para implementação de regras de negócio para a entidade Player
+/// </summary>
 public interface IPlayerService
 {
+    /// <summary>
+    /// Adiciona um jogador a um time do usuario
+    /// </summary>
     public Task<PlayerResponseDto> AddPlayerAsync(int userId, CreatePlayerDto dto);
 
-    public Task<PlayerResponseDto> GetByIdAsync(int id, int userId);
+    /// <summary>
+    /// Retorna um jogador de um time do usuario
+    /// </summary>
+    public Task<PlayerResponseDto> GetByIdAsync(int userId, int id);
 
-    public Task<PlayerResponseDto> UpdatePlayerProfileAsync(int id, int userId, UpdatePlayerProfileDto dto);
+    /// <summary>
+    /// Atualiza o perfil de um jogador registrado em um time do usuario
+    /// </summary>
+    public Task<PlayerResponseDto> UpdatePlayerProfileAsync(int userId, int id, UpdatePlayerProfileDto dto);
 
-    public Task<PlayerResponseDto> UpdatePlayerStatsAsync(int id, int userId, UpdatePlayerStatsDto dto);
+    /// <summary>
+    /// Atualiza as estatisticas de um jogador registrado em um time do usuario
+    /// </summary>
+    public Task<PlayerResponseDto> UpdatePlayerStatsAsync(int userId, int id, UpdatePlayerStatsDto dto);
 
-    public Task DeletePlayerAsync(int id, int userId);
+    /// <summary>
+    /// Deleta um jogador registrado de um time do usuario 
+    /// </summary>
+    public Task DeletePlayerAsync(int userId, int id);
 }

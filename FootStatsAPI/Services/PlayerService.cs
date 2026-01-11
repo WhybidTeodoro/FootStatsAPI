@@ -5,6 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FootStatsAPI.Services;
 
+
+/// <summary>
+/// Service que implementa a regra de negocio para a entidade Player
+/// </summary>
 public class PlayerService : IPlayerService
 {
 
@@ -15,6 +19,9 @@ public class PlayerService : IPlayerService
         _context = context;
     }
 
+    /// <summary>
+    /// Adiciona um jogador a um time do usuario
+    /// </summary>
     public async Task<PlayerResponseDto> AddPlayerAsync(int userId, CreatePlayerDto dto)
     {
         var teamExists = await _context.Teams.FirstOrDefaultAsync(t => t.UserId == userId && t.Id == dto.TeamId);
@@ -58,7 +65,10 @@ public class PlayerService : IPlayerService
         };
     }
 
-    public async Task<PlayerResponseDto> GetByIdAsync(int id, int userId)
+    /// <summary>
+    /// Retorna um jogador de um time do usuario
+    /// </summary>
+    public async Task<PlayerResponseDto> GetByIdAsync(int userId, int id)
     {
         var player = await _context.Players.Where(p =>  p.Id == id && p.Team.UserId == userId)
             .Select(p => new PlayerResponseDto
@@ -80,7 +90,10 @@ public class PlayerService : IPlayerService
 
     }
 
-    public async Task<PlayerResponseDto> UpdatePlayerProfileAsync(int id, int userId, UpdatePlayerProfileDto dto)
+    /// <summary>
+    /// Atualiza o perfil de um jogador registrado em um time do usuario
+    /// </summary>
+    public async Task<PlayerResponseDto> UpdatePlayerProfileAsync(int userId, int id, UpdatePlayerProfileDto dto)
     {
         var player = await _context.Players.FirstOrDefaultAsync(p => p.Id == id && p.Team.UserId == userId);
 
@@ -106,7 +119,10 @@ public class PlayerService : IPlayerService
         };
     }
 
-    public async Task<PlayerResponseDto> UpdatePlayerStatsAsync(int id, int userId, UpdatePlayerStatsDto dto)
+    /// <summary>
+    /// Atualiza as estatisticas de um jogador registrado em um time do usuario
+    /// </summary>
+    public async Task<PlayerResponseDto> UpdatePlayerStatsAsync(int userId, int id, UpdatePlayerStatsDto dto)
     {
         var player = await _context.Players.FirstOrDefaultAsync(p => p.Id == id && p.Team.UserId == userId);
 
@@ -130,7 +146,11 @@ public class PlayerService : IPlayerService
             MatchesPlayed = player.MatchesPlayed
         };
     }
-    public async Task DeletePlayerAsync(int id, int userId)
+
+    /// <summary>
+    /// Deleta um jogador registrado de um time do usuario 
+    /// </summary>
+    public async Task DeletePlayerAsync(int userId, int id)
     {
         var player = await _context.Players.FirstOrDefaultAsync(p => p.Id == id && p.Team.UserId == userId);
 

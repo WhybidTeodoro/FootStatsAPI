@@ -16,13 +16,10 @@ namespace FootStatsAPI.Controllers;
 [Authorize]
 public class PlayerController : ControllerBase
 {
-    private readonly FootDbContext _context;
-
     private readonly IPlayerService _playerService;
 
-    public PlayerController(FootDbContext context, IPlayerService playerService)
+    public PlayerController(IPlayerService playerService)
     {
-        _context = context;
         _playerService = playerService;
     }
 
