@@ -1,6 +1,7 @@
 ﻿using FootStatsAPI.Data;
 using FootStatsAPI.DTOs.Match;
 using FootStatsAPI.Models;
+using FootStatsAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,10 +17,12 @@ namespace FootStatsAPI.Controllers;
 public class MatchController : ControllerBase
 {
     private readonly FootDbContext _context;
+    private readonly IMatchService _matchService;
 
-    public MatchController(FootDbContext context)
+    public MatchController(FootDbContext context, IMatchService matchService)
     {
         _context = context;
+        _matchService = matchService;
     }
 
     /// <summary>
@@ -37,42 +40,21 @@ public class MatchController : ControllerBase
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
             return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
 
-        var teamExist = await _context.Teams.FirstOrDefaultAsync(t => t.Id == dto.TeamId && t.UserId == userId);
-
-        if (teamExist == null)
-            return NotFound(new { message = "O Time não existe" });
-
         try
         {
-            var match = new Match
-            {
-                MatchDate = dto.MatchDate,
-                OpponentTeam = dto.OpponentTeam,
-                GoalsFor = dto.GoalsFor,
-                GoalsAgainst = dto.GoalsAgainst,
-                TeamId = dto.TeamId
-            };
+            var match = await _matchService.AddMatchAsync(userId, dto);
 
-            _context.Matches.Add(match);
-            await _context.SaveChangesAsync();
-
-            var response = new MatchResponseDto
-            {
-                Id = match.Id,
-                MatchDate = match.MatchDate,
-                OpponentTeam = match.OpponentTeam,
-                GoalsFor = match.GoalsFor,
-                GoalsAgainst = match.GoalsAgainst,
-                TeamId = match.TeamId
-            };
-
-            return Created(string.Empty, response);
+            return Created(string.Empty, match);
         }
-        catch (Exception)
+        catch (InvalidOperationException ex)
         {
-
-            return StatusCode(500, new { message = "Erro interno ao tentar criar o jogador" });
+            return NotFound(ex.Message);
         }
+        catch(Exception)
+        {
+            return StatusCode(500, new { message = "Erro interno ao tentar adicionar nova partida" });
+        }
+      
     }
 
     /// <summary>
