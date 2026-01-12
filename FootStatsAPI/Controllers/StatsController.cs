@@ -1,5 +1,6 @@
 ﻿using FootStatsAPI.Data;
 using FootStatsAPI.DTOs.Stats;
+using FootStatsAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,11 +16,11 @@ namespace FootStatsAPI.Controllers;
 [Authorize]
 public class StatsController : ControllerBase
 {
-    private readonly FootDbContext _context;
+    private readonly IStatsService _statsService;
 
-    public StatsController(FootDbContext context)
+    public StatsController(IStatsService statsService)
     {
-        _context = context;
+        _statsService = statsService;
     }
 
     [HttpGet("/Team/{teamId}/stats")]
@@ -30,26 +31,15 @@ public class StatsController : ControllerBase
         if(userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
             return Unauthorized();
 
-        var TeamExists = await _context.Teams.FirstOrDefaultAsync(t => t.Id == teamId && t.UserId == userId);
-
-        if(TeamExists == null)
-            return NotFound();
-
-
-        var matches = await _context.Matches.Where(m => m.TeamId == teamId).ToListAsync();
-
-        var stats = new StatsResponseDto
+        try
         {
-            TotalMatches = matches.Count,
-            Wins = matches.Count(m => m.GoalsFor > m.GoalsAgainst),
-            Losses = matches.Count(m => m.GoalsFor < m.GoalsAgainst),
-            Draws = matches.Count(m => m.GoalsFor == m.GoalsAgainst),
-            TotalGoalsFor = matches.Sum(m => m.GoalsFor),
-            TotalGoalsAgainst = matches.Sum(m => m.GoalsAgainst)
-        };
+            var stats = await _statsService.GetAllStatsByTeam(userId, teamId);
 
-        //stats.GoalDifference = stats.TotalGoalsFor - stats.TotalGoalsAgainst;
-
-        return Ok(stats);
+            return Ok(stats);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(ex.Message);
+        }
     }
 }
