@@ -10,20 +10,20 @@ public class Match : ModelBase
     /// <summary>
     /// Data da partida.
     /// </summary>
-    public DateOnly MatchDate { get; set; }
+    public required DateOnly MatchDate { get; set; }
 
     /// <summary>
     /// Nome do time adversario.
     /// </summary>
     [Required(ErrorMessage = "O Nome do time é obrigatório")]
     [MaxLength(50, ErrorMessage = "O Nome do time adversario tem que ter no maximo 50 caracteres")]
-    public string OpponentTeam { get; set; } = string.Empty;
+    public required string OpponentTeam { get; set; } = string.Empty;
 
     /// <summary>
     /// Gols a favor na partida.
     /// </summary>
     [Range(0, int.MaxValue, ErrorMessage = "Não é permitido negativos nos gols ")]
-    public int GoalsFor { get; set; }
+    public required int GoalsFor { get; set; }
 
     /// <summary>
     /// Gols do adversario na partida.

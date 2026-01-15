@@ -14,7 +14,7 @@ public class Team : ModelBase
     /// </summary>
     [Required(ErrorMessage = "O Nome do time é obrigatório")]
     [MaxLength(50, ErrorMessage = "O Nome do time tem que ter no maximo 50 caracteres")]
-    public string Name { get; set; } = string.Empty;
+    public required string Name { get; set; } = string.Empty;
 
     /// <summary>
     /// Representa o usuario 
