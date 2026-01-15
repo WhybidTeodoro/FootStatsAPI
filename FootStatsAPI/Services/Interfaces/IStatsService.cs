@@ -2,7 +2,11 @@
 
 namespace FootStatsAPI.Services.Interfaces;
 
+
+/// <summary>
+/// Interface para implementação da regra de negocio de Stats
+/// </summary>
 public interface IStatsService
 {
-    public Task<StatsResponseDto> GetAllStatsByTeam(int userId, int teamId);
+    public Task<StatsResponseDto> GetStatsByTeam(int userId, int teamId);
 }

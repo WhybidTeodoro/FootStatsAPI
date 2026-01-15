@@ -34,7 +34,7 @@ public class Match
     /// Gols do adversario na partida.
     /// </summary>
     [Range(0, int.MaxValue, ErrorMessage = "O Numero de gols nao pode ser negativo ")]
-    public int GoalsAgainst { get; set; }
+    public required int GoalsAgainst { get; set; }
 
     /// <summary>
     /// Represente o time do usuario

@@ -23,8 +23,13 @@ public class StatsController : ControllerBase
         _statsService = statsService;
     }
 
-    [HttpGet("/Team/{teamId}/stats")]
-    public async Task<IActionResult> GetAllStatsByTeam(int teamId)
+    /// <summary>
+    /// Retorna as estatisticas das partidas do usuario
+    /// </summary>
+    /// <param name="teamId"></param>
+    /// <returns></returns>
+    [HttpGet("team/{teamId}/stats")]
+    public async Task<IActionResult> GetStatsByTeam(int teamId)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
@@ -33,7 +38,7 @@ public class StatsController : ControllerBase
 
         try
         {
-            var stats = await _statsService.GetAllStatsByTeam(userId, teamId);
+            var stats = await _statsService.GetStatsByTeam(userId, teamId);
 
             return Ok(stats);
         }
