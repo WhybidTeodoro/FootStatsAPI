@@ -136,6 +136,7 @@ public class TeamService : ITeamService
             throw new InvalidOperationException("Time não encontrado");
 
             team.Name = dto.Name;
+            team.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
 

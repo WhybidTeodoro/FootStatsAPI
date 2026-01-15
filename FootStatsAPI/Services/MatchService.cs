@@ -34,7 +34,8 @@ public class MatchService : IMatchService
             MatchDate = dto.MatchDate,
             GoalsFor = dto.GoalsFor,
             GoalsAgainst = dto.GoalsAgainst,
-            TeamId = dto.TeamId
+            TeamId = dto.TeamId,
+            CreatedAt = DateTime.UtcNow
         };
 
         _context.Matches.Add(match);
@@ -87,6 +88,7 @@ public class MatchService : IMatchService
         match.OpponentTeam = dto.OpponentTeam;
         match.GoalsFor = dto.GoalsFor;
         match.GoalsAgainst = dto.GoalsAgainst;
+        match.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
 

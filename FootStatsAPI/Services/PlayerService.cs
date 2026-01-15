@@ -105,6 +105,7 @@ public class PlayerService : IPlayerService
         player.Name = dto.Name;
         player.Position = dto.Position;
         player.ShirtNumber = dto.ShirtNumber;
+        player.UpdatedAt = DateTime.UtcNow;
         
         await _context.SaveChangesAsync();
 
