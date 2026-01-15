@@ -11,7 +11,7 @@ public class UpdateMatchDto
     /// Data da partida.
     /// </summary>
     [Required(ErrorMessage = "A data da partida é obrigatória")]
-    public DateTime MatchDate { get; set; }
+    public DateOnly MatchDate { get; set; }
 
     /// <summary>
     /// Nome do time adversario.

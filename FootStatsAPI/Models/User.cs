@@ -25,7 +25,7 @@ public class User : ModelBase
     /// Hash da senha do usuario. Usado no registro do usuario em sistema.
     /// </summary>
     [Required(ErrorMessage = "A senha é obrigatória")]
-    public required string PasswordHash { get; set; } = string.Empty;
+    public string PasswordHash { get; set; } = string.Empty;
 
     /// <summary>
     /// Lista de times que pertencem ao usuario logado.
