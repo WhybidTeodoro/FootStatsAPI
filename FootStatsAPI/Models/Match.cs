@@ -10,7 +10,7 @@ public class Match : ModelBase
     /// <summary>
     /// Data da partida.
     /// </summary>
-    public DateTime MatchDate { get; set; }
+    public DateOnly MatchDate { get; set; }
 
     /// <summary>
     /// Nome do time adversario.
