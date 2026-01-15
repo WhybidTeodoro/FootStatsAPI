@@ -5,12 +5,8 @@ namespace FootStatsAPI.Models;
 /// <summary>
 /// Entidade que representa o Usuario do sistema
 /// </summary>
-public class User
+public class User : ModelBase
 {
-    /// <summary>
-    /// Identificador unico do usuario.
-    /// </summary>
-    public int Id { get; set; }
 
     /// <summary>
     /// Nome do usuario.
@@ -30,11 +26,6 @@ public class User
     /// </summary>
     [Required(ErrorMessage = "A senha é obrigatória")]
     public string PasswordHash { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Data de criação do usuario em sistema.
-    /// </summary>
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// Lista de times que pertencem ao usuario logado.

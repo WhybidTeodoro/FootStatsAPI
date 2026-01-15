@@ -5,13 +5,8 @@ namespace FootStatsAPI.Models;
 /// <summary>
 /// Representa as partidas do time do usuario
 /// </summary>
-public class Match
+public class Match : ModelBase
 {
-    /// <summary>
-    /// Identifador unico da partida
-    /// </summary>
-    public int Id { get; set; }
-
     /// <summary>
     /// Data da partida.
     /// </summary>

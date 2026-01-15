@@ -1,15 +1,13 @@
-﻿using FootStatsAPI.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace FootStatsAPI.Models;
 
 /// <summary>
 /// Representa os jogadores do time.
 /// </summary>
-public class Player
+public class Player : ModelBase
 {
-    /// <summary>
-    /// Identificador unico do jogador
-    /// </summary>
-    public int Id { get; set; }
+
     /// <summary>
     /// Nome do jogador
     /// </summary>
@@ -27,13 +25,13 @@ public class Player
     /// <summary>
     /// Numero da camisa
     /// </summary>
-    [Range(0, 99, ErrorMessage = "O Numero da camisa é entre 0 e 99") ]
+    [Range(0, 99, ErrorMessage = "O Numero da camisa é entre 0 e 99")]
     public int ShirtNumber { get; set; }
 
     /// <summary>
     /// Quantidade de gols do jogador
     /// </summary>
-    [Range(0,int.MaxValue, ErrorMessage = "O Numero de gols não pode ser negativo")]
+    [Range(0, int.MaxValue, ErrorMessage = "O Numero de gols não pode ser negativo")]
     public int Goals { get; set; }
 
     /// <summary>
@@ -47,11 +45,6 @@ public class Player
     /// </summary>
     [Range(0, int.MaxValue, ErrorMessage = "O Numero de jogos não pode ser negativo")]
     public int MatchesPlayed { get; set; }
-
-    /// <summary>
-    /// Data da criação do player em sistema
-    /// </summary>
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// Representa o time do jogador

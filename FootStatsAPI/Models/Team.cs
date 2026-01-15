@@ -6,12 +6,8 @@ namespace FootStatsAPI.Models;
 /// <summary>
 /// Representa o time do usuario.
 /// </summary>
-public class Team
+public class Team : ModelBase
 {
-    /// <summary>
-    /// Identificador unico do time
-    /// </summary>
-    public int Id { get; set; }
 
     /// <summary>
     /// Nome do time do usuario
@@ -19,11 +15,6 @@ public class Team
     [Required(ErrorMessage = "O Nome do time é obrigatório")]
     [MaxLength(50, ErrorMessage = "O Nome do time tem que ter no maximo 50 caracteres")]
     public string Name { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Data da criação do time do usuario em sistema
-    /// </summary>
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// Representa o usuario 

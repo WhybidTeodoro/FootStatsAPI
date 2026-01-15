@@ -1,5 +1,6 @@
 ﻿using FootStatsAPI.Data;
 using FootStatsAPI.DTOs.Player;
+using FootStatsAPI.Models;
 using FootStatsAPI.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
