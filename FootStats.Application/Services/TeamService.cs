@@ -1,10 +1,10 @@
-﻿using FootStatsAPI.Data;
+﻿using FootStats.Application.Services.Interfaces.Repositories;
 using FootStatsAPI.DTOs.Match;
 using FootStatsAPI.DTOs.Player;
 using FootStatsAPI.DTOs.Team;
 using FootStatsAPI.Models;
 using FootStatsAPI.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace FootStatsAPI.Services;
 
@@ -14,11 +14,11 @@ namespace FootStatsAPI.Services;
 public class TeamService : ITeamService
 {
 
-    private readonly FootDbContext _context;
+    private readonly ITeamRepository _teamRepository;
 
-    public TeamService(FootDbContext context)
+    public TeamService(ITeamRepository teamRepository)
     {
-        _context = context;
+        _teamRepository = teamRepository;
     }
 
     /// <summary>

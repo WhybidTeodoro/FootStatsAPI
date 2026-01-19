@@ -1,4 +1,6 @@
-using FootStatsAPI.Data;
+using FootStats.Application.Services.Interfaces.Repositories;
+using FootStats.Infrastructure.Data;
+using FootStats.Infrastructure.Repositories;
 using FootStatsAPI.Services;
 using FootStatsAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -23,6 +25,7 @@ builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddScoped<IMatchService, MatchService >();
 builder.Services.AddScoped<IStatsService, StatsService>();
+builder.Services.AddScoped<ITeamRepository, TeamRepository>();
 
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");

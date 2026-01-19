@@ -1,7 +1,7 @@
 ﻿using FootStatsAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace FootStatsAPI.Data;
+namespace FootStats.Infrastructure.Data;
 
 public class FootDbContext : DbContext
 {

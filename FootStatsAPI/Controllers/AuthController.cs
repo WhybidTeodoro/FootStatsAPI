@@ -1,4 +1,4 @@
-﻿using FootStatsAPI.Data;
+﻿using FootStats.Infrastructure.Data;
 using FootStatsAPI.DTOs.User;
 using FootStatsAPI.Models;
 using Microsoft.AspNetCore.Identity;

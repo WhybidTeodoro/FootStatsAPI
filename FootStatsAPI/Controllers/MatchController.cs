@@ -1,4 +1,4 @@
-﻿using FootStatsAPI.Data;
+﻿using FootStats.Infrastructure.Data;
 using FootStatsAPI.DTOs.Match;
 using FootStatsAPI.Models;
 using FootStatsAPI.Services.Interfaces;
