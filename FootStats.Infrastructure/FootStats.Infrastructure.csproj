@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\FootStats.Application\FootStats.Application.csproj" />
     <ProjectReference Include="..\FootStats.Domain\FootStats.Domain.csproj" />
   </ItemGroup>
