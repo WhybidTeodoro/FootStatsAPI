@@ -24,9 +24,9 @@ public class TeamService : ITeamService
     /// <summary>
     /// Adiciona um time ao usuario
     /// </summary>
-    public async Task<TeamResponseDto> AddTeamAsync(int userId, CreateTeamDto dto)
+    public async Task<TeamResponseDto> AddTeamAsync(int userId,CreateTeamDto dto)
     {
-        var teamExists = await _context.Teams.AnyAsync(t => t.UserId == userId && t.Name == dto.Name);
+        var teamExists = await _teamRepository.ExistsAsync(userId, dto.Name);
 
         if (teamExists)
             throw new InvalidOperationException("O time já existe");
@@ -38,8 +38,8 @@ public class TeamService : ITeamService
                 CreatedAt = DateTime.UtcNow
             };
 
-            _context.Teams.Add(team);
-            await _context.SaveChangesAsync();
+            await _teamRepository.AddAsync(team);
+            await _teamRepository.SaveChangesAsync();
 
             return new TeamResponseDto
             {
@@ -54,30 +54,30 @@ public class TeamService : ITeamService
     /// </summary>
     public async Task<List<TeamResponseDto>> GetAllAsync(int userId)
     {
-        return await _context.Teams.Where(t => t.UserId == userId)
-       .Select(teams => new TeamResponseDto
+        var teams = await _teamRepository.GetAllByUserAsync(userId);
+
+       return teams.Select(teams => new TeamResponseDto
        {
            Id = teams.Id,
            Name = teams.Name
-       }).ToListAsync();
+       }).ToList();
     }
     
     /// <summary>
     /// Retorna um time do usuario
     /// </summary>
-    public async Task<TeamResponseDto> GetByIdAsync(int userId, int id)
+    public async Task<TeamResponseDto> GetByIdAsync(int userId, int teamid)
     {
-        var team = await _context.Teams.Where(t => t.Id == id && t.UserId == userId)
-                    .Select(t => new TeamResponseDto
-                    {
-                        Id = t.Id,
-                        Name = t.Name
-                    }).FirstOrDefaultAsync();
-
+        var team = await _teamRepository.GetByIdAsync(userId, teamid);
+        
         if (team == null)
             throw new InvalidOperationException("Time não existe");
 
-        return team;
+        return new TeamResponseDto
+        {
+            Id = team.Id,
+            Name = team.Name
+        };
     }
 
     /// <summary>
@@ -86,13 +86,13 @@ public class TeamService : ITeamService
     public async Task<List<PlayerResponseDto>> GetAllPlayersByTeamAsync(int userId, int teamId)
     {
 
-        var teamExists = await _context.Teams.FirstOrDefaultAsync(t => t.Id == teamId && t.UserId == userId);
+        var team = await _teamRepository.GetByIdAsync(userId, teamId);
 
-        if (teamExists == null)
+        if (team == null)
             throw new InvalidOperationException("Time não encontrado");
 
-        return await _context.Players.Where(p => p.TeamId == teamId && p.Team.UserId == userId)
-                    .Select(p => new PlayerResponseDto
+        return await _context.Players.Where(p => p.TeamId == teamId && p.Team.UserId == userId);
+                    Select(p => new PlayerResponseDto
                     {
                         Id = p.Id,
                         Name = p.Name,
@@ -128,9 +128,9 @@ public class TeamService : ITeamService
     /// <summary>
     /// Atualiza um time do usuario
     /// </summary>
-    public async Task<TeamResponseDto> UpdateTeamAsync(int userId, int id, UpdateTeamDto dto)
+    public async Task<TeamResponseDto> UpdateTeamAsync(int userId, int teamid, UpdateTeamDto dto)
     {
-        var team = await _context.Teams.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+        var team = await _teamRepository.GetByIdAsync(userId, teamid);
 
         if (team == null)
             throw new InvalidOperationException("Time não encontrado");
@@ -138,27 +138,27 @@ public class TeamService : ITeamService
             team.Name = dto.Name;
             team.UpdatedAt = DateTime.UtcNow;
 
-            await _context.SaveChangesAsync();
+            await _teamRepository.UpdateAsync(team);
+            await _teamRepository.SaveChangesAsync();
 
             return new TeamResponseDto
             {
                 Id = team.Id,
                 Name = team.Name
             };
-
     }
 
     /// <summary>
     /// Deleta um time do usuario
     /// </summary>
-    public async Task DeleteTeamAsync(int userId, int id)
+    public async Task DeleteTeamAsync(int userId, int teamid)
     {
-        var team = await _context.Teams.FirstOrDefaultAsync(t => t.UserId == userId && t.Id == id);
+        var team = await _teamRepository.GetByIdAsync(userId, teamid);
 
         if (team == null)
             throw new InvalidOperationException("Time não encontrado");
 
-        _context.Teams.Remove(team);
-        await _context.SaveChangesAsync();
+        await _teamRepository.DeleteAsync(team);
+        await _teamRepository.SaveChangesAsync();
     }
 }

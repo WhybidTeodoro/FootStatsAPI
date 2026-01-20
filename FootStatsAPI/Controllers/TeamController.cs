@@ -1,13 +1,7 @@
-﻿using FootStatsAPI.Data;
-using FootStatsAPI.DTOs.Match;
-using FootStatsAPI.DTOs.Player;
-using FootStatsAPI.DTOs.Team;
-using FootStatsAPI.Models;
-using FootStatsAPI.Services;
+﻿using FootStatsAPI.DTOs.Team;
 using FootStatsAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace FootStatsAPI.Controllers;
@@ -81,8 +75,8 @@ public class TeamController : ControllerBase
     /// <summary>
     /// Endpoint responsavel por buscar o time do usuario pelo id do time
     /// </summary>
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    [HttpGet("{teamId}")]
+    public async Task<IActionResult> GetById(int teamId)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
@@ -91,7 +85,7 @@ public class TeamController : ControllerBase
 
         try
         {
-            var team = await _teamService.GetByIdAsync(userId, id);
+            var team = await _teamService.GetByIdAsync(userId, teamId);
 
             return Ok(team);
         }
@@ -153,8 +147,8 @@ public class TeamController : ControllerBase
     /// <summary>
     /// Endpoint responsavel por atualizar um time do usuario
     /// </summary>
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateTeam(int id, UpdateTeamDto dto)
+    [HttpPut("{teamId}")]
+    public async Task<IActionResult> UpdateTeam(int teamId, UpdateTeamDto dto)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
@@ -163,7 +157,7 @@ public class TeamController : ControllerBase
 
         try
         {
-            var team = await _teamService.UpdateTeamAsync(userId, id, dto);
+            var team = await _teamService.UpdateTeamAsync(userId, teamId, dto);
 
             return Ok(team);
         }
@@ -177,8 +171,8 @@ public class TeamController : ControllerBase
     /// <summary>
     /// Endpoint responsavel por deletar um time do usuario.
     /// </summary>
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteTeam(int id)
+    [HttpDelete("{teamId}")]
+    public async Task<IActionResult> DeleteTeam(int teamId)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
@@ -186,7 +180,7 @@ public class TeamController : ControllerBase
             return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
         try
         {
-             await _teamService.DeleteTeamAsync(userId, id);
+             await _teamService.DeleteTeamAsync(userId, teamId);
 
             return NoContent();
         }
