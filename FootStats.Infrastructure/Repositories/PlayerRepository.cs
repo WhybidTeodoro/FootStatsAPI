@@ -2,6 +2,7 @@
 using FootStats.Infrastructure.Data;
 using FootStatsAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Numerics;
 
 namespace FootStats.Infrastructure.Repositories
 {
@@ -36,14 +37,6 @@ namespace FootStats.Infrastructure.Repositories
             return await _context.Players.FirstOrDefaultAsync(p => p.Team.UserId == userId && p.Id == id);
         }
 
-        public async Task<bool> PlayerExists(Player player)
-        {
-            return await _context.Players.AnyAsync(p => p.Name == player.Name
-                            && p.Position == player.Position 
-                            && p.ShirtNumber == player.ShirtNumber 
-                            && p.TeamId == player.TeamId);
-        }
-
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
@@ -53,6 +46,14 @@ namespace FootStats.Infrastructure.Repositories
         {
             _context.Players.Update(player);
             return Task.CompletedTask;
+        }
+
+        public async Task<bool> ExistsAsync(string name, string position, int shirtNumber, int teamId)
+        {
+            return await _context.Players.AnyAsync(p => p.Name == name
+                           && p.Position == position
+                           && p.ShirtNumber == shirtNumber
+                           && p.TeamId == teamId);
         }
     }
 }

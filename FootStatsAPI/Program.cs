@@ -26,6 +26,7 @@ builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddScoped<IMatchService, MatchService >();
 builder.Services.AddScoped<IStatsService, StatsService>();
 builder.Services.AddScoped<ITeamRepository, TeamRepository>();
+builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
 
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");

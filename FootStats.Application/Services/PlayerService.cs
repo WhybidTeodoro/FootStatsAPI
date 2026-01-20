@@ -1,8 +1,7 @@
-﻿using FootStatsAPI.Data;
+﻿using FootStats.Application.Services.Interfaces.Repositories;
 using FootStatsAPI.DTOs.Player;
 using FootStatsAPI.Models;
 using FootStatsAPI.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace FootStatsAPI.Services;
 
@@ -13,11 +12,13 @@ namespace FootStatsAPI.Services;
 public class PlayerService : IPlayerService
 {
 
-    private readonly FootDbContext _context;
+    private readonly IPlayerRepository _playerRepository;
+    private readonly ITeamRepository _teamRepository;
 
-    public PlayerService(FootDbContext context)
+    public PlayerService(IPlayerRepository playerRepository, ITeamRepository teamRepository)
     {
-        _context = context;
+        _playerRepository = playerRepository;
+        _teamRepository = teamRepository;
     }
 
     /// <summary>
@@ -25,11 +26,6 @@ public class PlayerService : IPlayerService
     /// </summary>
     public async Task<PlayerResponseDto> AddPlayerAsync(int userId, CreatePlayerDto dto)
     {
-        var teamExists = await _context.Teams.FirstOrDefaultAsync(t => t.UserId == userId && t.Id == dto.TeamId);
-
-        if (teamExists == null)
-            throw new InvalidOperationException("Time não encontrado");
-
         var player = new Player
         {
             Name = dto.Name,
@@ -42,17 +38,18 @@ public class PlayerService : IPlayerService
             CreatedAt = DateTime.UtcNow
         };
 
-        var playerExists = await _context.Players.AnyAsync(p =>
-        p.Name == player.Name &&
-        p.Position == player.Position &&
-        p.ShirtNumber == player.ShirtNumber &&
-        p.TeamId == player.TeamId);
+        var teamExists = await _teamRepository.GetByIdAsync(userId, player.TeamId);
+
+        if (teamExists == null)
+           throw new InvalidOperationException("Time não encontrado");
+
+        var playerExists = await _playerRepository.ExistsAsync(dto.Name, dto.Position, dto.ShirtNumber, dto.TeamId);
 
         if (playerExists)
             throw new InvalidOperationException("Jogador já registrado");
 
-        _context.Players.Add(player);
-        await _context.SaveChangesAsync();
+        await _playerRepository.AddAsync(player);
+        await _playerRepository.SaveChangesAsync();
 
         return new PlayerResponseDto
         {
@@ -71,24 +68,21 @@ public class PlayerService : IPlayerService
     /// </summary>
     public async Task<PlayerResponseDto> GetByIdAsync(int userId, int id)
     {
-        var player = await _context.Players.Where(p =>  p.Id == id && p.Team.UserId == userId)
-            .Select(p => new PlayerResponseDto
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Position = p.Position,
-                ShirtNumber = p.ShirtNumber,
-                Goals= p.Goals,
-                Assists = p.Assists,
-                MatchesPlayed= p.MatchesPlayed
-            }).FirstOrDefaultAsync();
+        var player = await _playerRepository.GetByIdAsync(userId, id);
 
         if (player == null)
             throw new InvalidOperationException("Jogador não registrado");
 
-        return player;
-
-
+        return new PlayerResponseDto
+        {
+            Id = player.Id,
+            Name = player.Name,
+            Position = player.Position,
+            ShirtNumber = player.ShirtNumber,
+            Goals = player.Goals,
+            Assists = player.Assists,
+            MatchesPlayed = player.MatchesPlayed
+        };
     }
 
     /// <summary>
@@ -96,18 +90,18 @@ public class PlayerService : IPlayerService
     /// </summary>
     public async Task<PlayerResponseDto> UpdatePlayerProfileAsync(int userId, int id, UpdatePlayerProfileDto dto)
     {
-        var player = await _context.Players.FirstOrDefaultAsync(p => p.Id == id && p.Team.UserId == userId);
+        var player = await _playerRepository.GetByIdAsync(userId, id);
 
         if (player == null)
             throw new InvalidOperationException("Jogador não registrado");
-
 
         player.Name = dto.Name;
         player.Position = dto.Position;
         player.ShirtNumber = dto.ShirtNumber;
         player.UpdatedAt = DateTime.UtcNow;
         
-        await _context.SaveChangesAsync();
+        await _playerRepository.UpdateAsync(player);
+        await _playerRepository.SaveChangesAsync();
 
         return new PlayerResponseDto
         {
@@ -126,7 +120,7 @@ public class PlayerService : IPlayerService
     /// </summary>
     public async Task<PlayerResponseDto> UpdatePlayerStatsAsync(int userId, int id, UpdatePlayerStatsDto dto)
     {
-        var player = await _context.Players.FirstOrDefaultAsync(p => p.Id == id && p.Team.UserId == userId);
+        var player = await _playerRepository.GetByIdAsync(userId, id);
 
         if (player == null)
             throw new InvalidOperationException("Jogador não registrado");
@@ -135,7 +129,8 @@ public class PlayerService : IPlayerService
         player.Assists = dto.Assists;
         player.MatchesPlayed = dto.MatchesPlayed;
 
-        await _context.SaveChangesAsync();
+        await _playerRepository.UpdateAsync(player);
+        await _playerRepository.SaveChangesAsync();
 
         return new PlayerResponseDto
         {
@@ -154,12 +149,12 @@ public class PlayerService : IPlayerService
     /// </summary>
     public async Task DeletePlayerAsync(int userId, int id)
     {
-        var player = await _context.Players.FirstOrDefaultAsync(p => p.Id == id && p.Team.UserId == userId);
+        var player = await _playerRepository.GetByIdAsync(userId, id);
 
         if (player == null)
             throw new InvalidOperationException("Jogador não registrado");
 
-        _context.Players.Remove(player);
-        await _context.SaveChangesAsync();
+        await _playerRepository.DeleteAsync(player);
+        await _playerRepository.SaveChangesAsync();
     }
 }

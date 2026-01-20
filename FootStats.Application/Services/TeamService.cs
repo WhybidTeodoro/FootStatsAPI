@@ -15,10 +15,12 @@ public class TeamService : ITeamService
 {
 
     private readonly ITeamRepository _teamRepository;
+    private readonly IPlayerRepository _playerRepository;
 
-    public TeamService(ITeamRepository teamRepository)
+    public TeamService(ITeamRepository teamRepository, IPlayerRepository playerRepository)
     {
         _teamRepository = teamRepository;
+        _playerRepository = playerRepository;
     }
 
     /// <summary>
@@ -91,17 +93,18 @@ public class TeamService : ITeamService
         if (team == null)
             throw new InvalidOperationException("Time não encontrado");
 
-        return await _context.Players.Where(p => p.TeamId == teamId && p.Team.UserId == userId);
-                    Select(p => new PlayerResponseDto
-                    {
-                        Id = p.Id,
-                        Name = p.Name,
-                        Position = p.Position,
-                        ShirtNumber = p.ShirtNumber,
-                        MatchesPlayed = p.MatchesPlayed,
-                        Goals = p.Goals,
-                        Assists = p.Assists
-                    }).ToListAsync();
+        var player = await _playerRepository.GetAllByTeamAsync(userId, teamId);
+
+        return player.Select(p => new PlayerResponseDto
+        {
+            Id = p.Id,
+            Name = p.Name,
+            Position = p.Position,
+            ShirtNumber = p.ShirtNumber,
+            Goals = p.Goals,
+            Assists = p.Assists,
+            MatchesPlayed = p.MatchesPlayed
+        }).ToList();
     }
     
     /// <summary>
