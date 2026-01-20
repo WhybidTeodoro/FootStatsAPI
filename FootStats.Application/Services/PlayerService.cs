@@ -46,7 +46,7 @@ public class PlayerService : IPlayerService
         p.Name == player.Name &&
         p.Position == player.Position &&
         p.ShirtNumber == player.ShirtNumber &&
-        p.TeamId == dto.TeamId);
+        p.TeamId == player.TeamId);
 
         if (playerExists)
             throw new InvalidOperationException("Jogador já registrado");

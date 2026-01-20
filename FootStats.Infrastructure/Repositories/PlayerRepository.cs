@@ -1,38 +1,58 @@
 ﻿using FootStats.Application.Services.Interfaces.Repositories;
+using FootStats.Infrastructure.Data;
 using FootStatsAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace FootStats.Infrastructure.Repositories
 {
-    internal class PlayerRepository : IPlayerRepository
+    public class PlayerRepository : IPlayerRepository
     {
-        public Task AddAsync(Player player)
+
+        private readonly FootDbContext _context;
+
+        public PlayerRepository(FootDbContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+        }
+
+        public async Task AddAsync(Player player)
+        {
+            await _context.Players.AddAsync(player);
         }
 
         public Task DeleteAsync(Player player)
         {
-            throw new NotImplementedException();
+            _context.Players.Remove(player);
+            return Task.CompletedTask;
         }
 
-        public Task<List<Player>> GetAllByTeamAsync(int userId, int teamId)
+        public async Task<List<Player>> GetAllByTeamAsync(int userId, int teamId)
         {
-            throw new NotImplementedException();
+            return await _context.Players.Where(p => p.Team.UserId == userId && p.TeamId == teamId).ToListAsync();
         }
 
-        public Task<Player?> GetByIdAsync(int userId, int id)
+        public async Task<Player?> GetByIdAsync(int userId, int id)
         {
-            throw new NotImplementedException();
+            return await _context.Players.FirstOrDefaultAsync(p => p.Team.UserId == userId && p.Id == id);
         }
 
-        public Task SaveChangesAsync()
+        public async Task<bool> PlayerExists(Player player)
         {
-            throw new NotImplementedException();
+            return await _context.Players.AnyAsync(p => p.Name == player.Name
+                            && p.Position == player.Position 
+                            && p.ShirtNumber == player.ShirtNumber 
+                            && p.TeamId == player.TeamId);
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
         }
 
         public Task UpdateAsync(Player player)
         {
-            throw new NotImplementedException();
+            _context.Players.Update(player);
+            return Task.CompletedTask;
         }
     }
 }
