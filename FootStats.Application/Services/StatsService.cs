@@ -1,7 +1,6 @@
-﻿using FootStatsAPI.Data;
+﻿using FootStats.Application.Services.Interfaces.Repositories;
 using FootStatsAPI.DTOs.Stats;
 using FootStatsAPI.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace FootStatsAPI.Services;
 
@@ -10,11 +9,13 @@ namespace FootStatsAPI.Services;
 /// </summary>
 public class StatsService : IStatsService
 {
-    private readonly FootDbContext _context;
+    private readonly ITeamRepository _teamRepository;
+    private readonly IMatchRepository _matchRepository;
 
-    public StatsService(FootDbContext context)
+    public StatsService(ITeamRepository teamRepository, IMatchRepository matchRepository)
     {
-        _context = context;
+        _teamRepository = teamRepository;
+        _matchRepository = matchRepository;
     }
 
     /// <summary>
@@ -22,12 +23,12 @@ public class StatsService : IStatsService
     /// </summary>
     public async Task<StatsResponseDto> GetStatsByTeam(int userId, int teamId)
     {
-        var teamExists = await _context.Teams.FirstOrDefaultAsync(t => t.UserId == userId && t.Id == teamId);
+        var teamExists = await _teamRepository.GetByIdAsync(userId, teamId);
 
         if (teamExists == null)
             throw new InvalidOperationException("Time não encontrado");
 
-        var matches = await _context.Matches.Where(m => m.TeamId == teamId).ToListAsync();
+        var matches = await _matchRepository.GetAllMatchesByTeamAsync(userId, teamId);
 
         var stats = new StatsResponseDto
         {
