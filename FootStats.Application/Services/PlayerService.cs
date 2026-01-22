@@ -25,7 +25,14 @@ public class PlayerService : IPlayerService
     /// Adiciona um jogador a um time do usuario
     /// </summary>
     public async Task<PlayerResponseDto> AddPlayerAsync(int userId, CreatePlayerDto dto)
-    {
+    { 
+        
+        var teamExists = await _teamRepository.GetByIdAsync(userId, dto.TeamId);
+
+        if (teamExists == null)
+           throw new InvalidOperationException("Time não encontrado");
+
+
         var player = new Player
         {
             Name = dto.Name,
@@ -38,12 +45,7 @@ public class PlayerService : IPlayerService
             CreatedAt = DateTime.UtcNow
         };
 
-        var teamExists = await _teamRepository.GetByIdAsync(userId, player.TeamId);
-
-        if (teamExists == null)
-           throw new InvalidOperationException("Time não encontrado");
-
-        var playerExists = await _playerRepository.ExistsAsync(dto.Name, dto.Position, dto.ShirtNumber, dto.TeamId);
+        var playerExists = await _playerRepository.ExistsAsync(player.Name, player.Position, player.ShirtNumber, player.TeamId);
 
         if (playerExists)
             throw new InvalidOperationException("Jogador já registrado");

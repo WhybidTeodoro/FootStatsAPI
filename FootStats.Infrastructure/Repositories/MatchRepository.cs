@@ -35,6 +35,11 @@ public class MatchRepository : IMatchRepository
         return await _context.Matches.FirstOrDefaultAsync(m => m.Team.UserId == userId && m.Id == id);
     }
 
+    public async Task SaveChangesAsync()
+    {
+        await _context.SaveChangesAsync();
+    }
+
     public Task UpdateAsync(Match match)
     {
         _context.Matches.Update(match);

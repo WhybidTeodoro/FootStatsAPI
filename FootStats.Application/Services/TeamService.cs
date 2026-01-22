@@ -16,11 +16,13 @@ public class TeamService : ITeamService
 
     private readonly ITeamRepository _teamRepository;
     private readonly IPlayerRepository _playerRepository;
+    private readonly IMatchRepository _matchRepository;
 
-    public TeamService(ITeamRepository teamRepository, IPlayerRepository playerRepository)
+    public TeamService(ITeamRepository teamRepository, IPlayerRepository playerRepository, IMatchRepository matchRepository)
     {
         _teamRepository = teamRepository;
         _playerRepository = playerRepository;
+        _matchRepository = matchRepository;
     }
 
     /// <summary>
@@ -112,20 +114,21 @@ public class TeamService : ITeamService
     /// </summary>
     public async Task<List<MatchResponseDto>> GetAllMatchesByTeamAsync(int userId, int teamId)
     {
-        var teamExists = await _context.Teams.FirstOrDefaultAsync(t => t.Id == teamId && t.UserId == userId);
+        var teamExists = await _teamRepository.GetByIdAsync(userId, teamId);
 
         if (teamExists == null)
             throw new InvalidOperationException("Time não encontrado");
 
-        return await _context.Matches.Where(m => m.TeamId == teamId && m.Team.UserId == userId)
-            .Select(m => new MatchResponseDto
+        var match = await _matchRepository.GetAllMatchesByTeamAsync(userId, teamId);
+
+        return match.Select(m => new MatchResponseDto
             {
                 Id = m.Id,
                 MatchDate = m.MatchDate,
                 OpponentTeam = m.OpponentTeam,
                 GoalsFor = m.GoalsFor,
                 GoalsAgainst = m.GoalsAgainst
-            }).ToListAsync();
+            }).ToList();
     }
 
     /// <summary>

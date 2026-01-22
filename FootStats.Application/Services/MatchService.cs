@@ -1,8 +1,7 @@
-﻿using FootStatsAPI.Data;
+﻿using FootStats.Application.Services.Interfaces.Repositories;
 using FootStatsAPI.DTOs.Match;
 using FootStatsAPI.Models;
 using FootStatsAPI.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace FootStatsAPI.Services;
 
@@ -11,11 +10,13 @@ namespace FootStatsAPI.Services;
 /// </summary>
 public class MatchService : IMatchService
 {
-    private readonly FootDbContext _context;
+    private readonly IMatchRepository _matchRepository;
+    private readonly ITeamRepository _teamRepository;
 
-    public MatchService(FootDbContext context)
+    public MatchService(IMatchRepository matchRepository, ITeamRepository teamRepository)
     {
-        _context = context;
+        _matchRepository = matchRepository;
+        _teamRepository = teamRepository;
     }
 
     /// <summary>
@@ -23,7 +24,7 @@ public class MatchService : IMatchService
     /// </summary>
     public async Task<MatchResponseDto> AddMatchAsync(int userId, CreateMatchDto dto)
     {
-        var teamExists = await _context.Teams.FirstOrDefaultAsync(t => t.UserId == userId && t.Id == dto.TeamId);
+        var teamExists = await _teamRepository.GetByIdAsync(userId, dto.TeamId);
 
         if (teamExists == null)
             throw new InvalidOperationException("Time não encontrado");
@@ -38,8 +39,8 @@ public class MatchService : IMatchService
             CreatedAt = DateTime.UtcNow
         };
 
-        _context.Matches.Add(match);
-        await _context.SaveChangesAsync();
+        await _matchRepository.AddAsync(match);
+        await _matchRepository.SaveChangesAsync();
 
         return new MatchResponseDto
         {
@@ -57,21 +58,20 @@ public class MatchService : IMatchService
     /// </summary>
     public async Task<MatchResponseDto> GetByIdAsync(int userId, int id)
     {
-        var match = await _context.Matches.Where(m => m.Team.UserId == userId && m.Id == id)
-            .Select(m => new MatchResponseDto
-            {
-                Id = m.Id,
-                MatchDate = m.MatchDate,
-                OpponentTeam = m.OpponentTeam,
-                GoalsFor = m.GoalsFor,
-                GoalsAgainst = m.GoalsAgainst,
-                TeamId = m.TeamId
-            }).FirstOrDefaultAsync();
+        var match = await _matchRepository.GetByIdAsync(userId, id);
 
         if (match == null)
             throw new InvalidOperationException("Partida não encontrada");
 
-        return match;
+        return new MatchResponseDto
+        {
+            Id = match.Id,
+            MatchDate = match.MatchDate,
+            OpponentTeam = match.OpponentTeam,
+            GoalsFor = match.GoalsFor,
+            GoalsAgainst = match.GoalsAgainst,
+            TeamId = match.TeamId
+        };
     }
 
     /// <summary>
@@ -79,7 +79,7 @@ public class MatchService : IMatchService
     /// </summary>
     public async Task<MatchResponseDto> UpdateMatchAsync(int userId, int id, UpdateMatchDto dto)
     {
-        var match = await _context.Matches.FirstOrDefaultAsync(m => m.Team.UserId == userId && m.Id == id);
+        var match = await _matchRepository.GetByIdAsync(userId, id);
 
         if (match == null)
             throw new InvalidOperationException("Partida não encontrada");
@@ -90,7 +90,8 @@ public class MatchService : IMatchService
         match.GoalsAgainst = dto.GoalsAgainst;
         match.UpdatedAt = DateTime.UtcNow;
 
-        await _context.SaveChangesAsync();
+        await _matchRepository.UpdateAsync(match);
+        await _matchRepository.SaveChangesAsync();
 
         return new MatchResponseDto
         {
@@ -108,12 +109,12 @@ public class MatchService : IMatchService
     /// </summary>
     public async Task DeleteMatchAsync(int userId, int id)
     {
-        var match = await _context.Matches.FirstOrDefaultAsync(m => m.Team.UserId == userId && m.Id == id);
+        var match = await _matchRepository.GetByIdAsync(userId, id);
 
         if (match == null)
             throw new InvalidOperationException("Partida não encontrada");
 
-        _context.Matches.Remove(match);
-        await _context.SaveChangesAsync();
+        await _matchRepository.DeleteAsync(match);
+        await _matchRepository.SaveChangesAsync();
     }
 }

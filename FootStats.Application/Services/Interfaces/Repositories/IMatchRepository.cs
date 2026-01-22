@@ -9,4 +9,5 @@ public interface IMatchRepository
     Task<List<Match>> GetAllMatchesByTeamAsync(int userId, int teamId);
     Task UpdateAsync(Match match);
     Task DeleteAsync(Match match);
+    Task SaveChangesAsync();
 }
