@@ -1,9 +1,7 @@
-﻿using FootStatsAPI.Data;
-using FootStatsAPI.DTOs.Player;
+﻿using FootStatsAPI.DTOs.Player;
 using FootStatsAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace FootStatsAPI.Controllers;
@@ -67,7 +65,7 @@ public class PlayerController : ControllerBase
 
         try
         {
-            var player = await _playerService.GetByIdAsync(id, userId);
+            var player = await _playerService.GetByIdAsync(userId, id);
 
             return Ok(player);
 

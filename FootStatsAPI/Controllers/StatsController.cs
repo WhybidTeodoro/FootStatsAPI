@@ -1,9 +1,6 @@
-﻿using FootStatsAPI.Data;
-using FootStatsAPI.DTOs.Stats;
-using FootStatsAPI.Services.Interfaces;
+﻿using FootStatsAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace FootStatsAPI.Controllers;
