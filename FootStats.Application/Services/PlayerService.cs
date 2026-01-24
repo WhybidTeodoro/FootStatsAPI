@@ -38,10 +38,10 @@ public class PlayerService : IPlayerService
             Name = dto.Name,
             Position = dto.Position,
             ShirtNumber = dto.ShirtNumber,
-            Goals = dto.Goals,
-            Assists = dto.Assists,
-            MatchesPlayed = dto.MatchesPlayed,
             TeamId = dto.TeamId,
+            Goals = 0,
+            Assists = 0,
+            MatchesPlayed = 0,
             CreatedAt = DateTime.UtcNow
         };
 

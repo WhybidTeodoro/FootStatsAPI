@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using FluentValidation;
+using FootStats.Application.Validators.Player;
+using FootStats.API.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +31,9 @@ builder.Services.AddScoped<IStatsService, StatsService>();
 builder.Services.AddScoped<ITeamRepository, TeamRepository>();
 builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
 builder.Services.AddScoped<IMatchRepository, MatchRepository>();
+
+
+builder.Services.AddValidatorsFromAssemblyContaining<CreatePlayerDtoValidator>();
 
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
@@ -66,7 +72,10 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<ValidationFilter>();
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
