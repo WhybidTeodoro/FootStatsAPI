@@ -3,7 +3,7 @@ using FootStatsAPI.DTOs.Player;
 
 namespace FootStats.Application.Validators.Player;
 
-internal class UpdatePlayerStatsDtoValidator : AbstractValidator<UpdatePlayerStatsDto>
+public class UpdatePlayerStatsDtoValidator : AbstractValidator<UpdatePlayerStatsDto>
 {
     public UpdatePlayerStatsDtoValidator()
     {

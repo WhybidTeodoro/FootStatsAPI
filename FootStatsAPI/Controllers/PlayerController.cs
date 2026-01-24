@@ -94,7 +94,7 @@ public class PlayerController : ControllerBase
 
         try
         {
-            var player = await _playerService.UpdatePlayerProfileAsync(id, userId, dto);
+            var player = await _playerService.UpdatePlayerProfileAsync(userId, id, dto);
     
             return Ok(player);
 
@@ -125,7 +125,7 @@ public class PlayerController : ControllerBase
 
         try
         {
-            var player = await _playerService.UpdatePlayerStatsAsync(id, userId, dto);
+            var player = await _playerService.UpdatePlayerStatsAsync(userId, id, dto);
 
             return Ok(player);
         }
@@ -149,7 +149,7 @@ public class PlayerController : ControllerBase
 
         try
         {
-            await _playerService.DeletePlayerAsync(id, userId);
+            await _playerService.DeletePlayerAsync(userId, id);
 
             return NoContent();
         }
