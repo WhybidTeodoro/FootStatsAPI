@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace FootStatsAPI.DTOs.Player;
+﻿namespace FootStatsAPI.DTOs.Player;
 
 /// <summary>
 /// Dto utilizado para adicionar um jogador

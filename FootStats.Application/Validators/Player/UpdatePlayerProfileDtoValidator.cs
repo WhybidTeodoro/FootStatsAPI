@@ -4,15 +4,15 @@ using FootStatsAPI.DTOs.Player;
 namespace FootStats.Application.Validators.Player;
 
 /// <summary>
-/// Responsavel pela validação dos dados na criação do jogador
+/// Responsavel pela validação dos dados na atualização do perfil do jogador
 /// </summary>
-public class CreatePlayerDtoValidator : AbstractValidator<CreatePlayerDto>
+public class UpdatePlayerProfileDtoValidator : AbstractValidator<UpdatePlayerProfileDto>
 {
-    public CreatePlayerDtoValidator()
+    public UpdatePlayerProfileDtoValidator()
     {
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Nome é obrigatório")
-            .MaximumLength(100);
+            .MaximumLength(100).WithMessage("O nome deve conter no máximo 100 caracteres");
 
         RuleFor(x => x.Position)
             .NotEmpty().WithMessage("Posição obrigatória");
