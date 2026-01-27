@@ -3,7 +3,6 @@ using FootStatsAPI.DTOs.Team;
 using FootStatsAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace FootStatsAPI.Controllers;
 
@@ -37,15 +36,14 @@ public class TeamController : BaseController
         }
         catch(InvalidOperationException ex)
         {
-            return BadRequest(ex.Message);
+            return BadRequest(new { message = ex.Message });
         }
         catch(UnauthorizedAccessException ex)
         {
-            return Unauthorized(ex.Message);
+            return Unauthorized(new { message = ex.Message });
         }
         catch (Exception)
         {
-
             return StatusCode(500, new { message = "Erro interno ao tentar criar o time para o usuario" });
         } 
     }
@@ -57,14 +55,21 @@ public class TeamController : BaseController
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        try
+        {
+            var userId = GetUserId();
 
-        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
+            var teams = await _teamService.GetAllAsync(userId);
 
-        var teams = await _teamService.GetAllAsync(userId);
+            return Ok(teams);
 
-        return Ok(teams);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+
+            return Unauthorized(new { message = ex.Message });
+        }
+        
         
     }
 
@@ -74,13 +79,10 @@ public class TeamController : BaseController
     [HttpGet("{teamId}")]
     public async Task<IActionResult> GetById(int teamId)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-
-        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
-
         try
         {
+            var userId = GetUserId();
+
             var team = await _teamService.GetByIdAsync(userId, teamId);
 
             return Ok(team);
@@ -88,7 +90,11 @@ public class TeamController : BaseController
         catch (InvalidOperationException ex)
         {
 
-            return NotFound(ex.Message);
+            return NotFound(new { message = ex.Message });
+        }
+        catch(UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
         }
     
     }
@@ -99,20 +105,22 @@ public class TeamController : BaseController
     [HttpGet("{teamId}/players")]
     public async Task<IActionResult> GetAllPlayersByTeam(int teamId)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-
-        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
-
         try
         {
+            var userId = GetUserId();
+
             var players = await _teamService.GetAllPlayersByTeamAsync(userId, teamId);
+
             return Ok(players);
         }
         catch (InvalidOperationException ex)
         {
 
-            return NotFound(ex.Message);
+            return NotFound(new { message = ex.Message });
+        }
+        catch(UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
         }
                                        
     }
@@ -123,20 +131,21 @@ public class TeamController : BaseController
     [HttpGet("{teamId}/matches")]
     public async Task<IActionResult> GetAllMatchesByTeam(int teamId)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-
-        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-            return Unauthorized();
         try
         {
+            var userId = GetUserId();
+
             var matches = await _teamService.GetAllMatchesByTeamAsync(userId, teamId);
 
             return Ok(matches);
         }
         catch (InvalidOperationException ex)
         {
-
-            return NotFound(ex.Message);
+            return NotFound(new { message = ex.Message });
+        }
+        catch(UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
         }
     }
 
@@ -146,13 +155,10 @@ public class TeamController : BaseController
     [HttpPut("{teamId}")]
     public async Task<IActionResult> UpdateTeam(int teamId, UpdateTeamDto dto)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-
-        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
-
         try
         {
+            var userId = GetUserId();
+
             var team = await _teamService.UpdateTeamAsync(userId, teamId, dto);
 
             return Ok(team);
@@ -160,7 +166,11 @@ public class TeamController : BaseController
         catch (InvalidOperationException ex)
         {
 
-            return NotFound(ex.Message);
+            return NotFound(new { message = ex.Message });
+        }
+        catch(UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
         }
     }
 
@@ -170,20 +180,22 @@ public class TeamController : BaseController
     [HttpDelete("{teamId}")]
     public async Task<IActionResult> DeleteTeam(int teamId)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-
-        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
         try
         {
-             await _teamService.DeleteTeamAsync(userId, teamId);
+            var userId = GetUserId();
+
+            await _teamService.DeleteTeamAsync(userId, teamId);
 
             return NoContent();
         }
         catch (InvalidOperationException ex)
         {
 
-            return NotFound(ex.Message);
+            return NotFound(new { message = ex.Message });
+        }
+        catch(UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
         }
     }
 }

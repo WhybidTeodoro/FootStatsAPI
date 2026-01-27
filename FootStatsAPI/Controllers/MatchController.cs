@@ -1,4 +1,5 @@
-﻿using FootStatsAPI.DTOs.Match;
+﻿using FootStats.API.Controllers;
+using FootStatsAPI.DTOs.Match;
 using FootStatsAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +12,7 @@ namespace FootStatsAPI.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class MatchController : ControllerBase
+public class MatchController : BaseController
 {
     private readonly IMatchService _matchService;
 
@@ -26,26 +27,28 @@ public class MatchController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> AddMatch(CreateMatchDto dto)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-
-        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
 
         try
         {
+            var userId = GetUserId();
+
             var match = await _matchService.AddMatchAsync(userId, dto);
 
             return Created(string.Empty, match);
         }
         catch (InvalidOperationException ex)
         {
-            return NotFound(ex.Message);
+            return NotFound(new { message = ex.Message });
+
         }
-        catch(Exception)
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
+        catch (Exception)
         {
             return StatusCode(500, new { message = "Erro interno ao tentar adicionar nova partida" });
-        }
-      
+        }      
     }
 
     /// <summary>
@@ -54,20 +57,21 @@ public class MatchController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-
-        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
-
         try
         {
+            var userId = GetUserId();
+
             var match = await _matchService.GetByIdAsync(userId, id);
 
             return Ok(match);
         }
         catch (InvalidOperationException ex)
         {
-            return NotFound(ex.Message);
+            return NotFound(new { message = ex.Message });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
         }
     }
 
@@ -77,20 +81,21 @@ public class MatchController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateMatch(int id, UpdateMatchDto dto)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-
-        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
-
         try
         {
+            var userId = GetUserId();
+
             var match = await _matchService.UpdateMatchAsync(userId, id, dto);
 
             return Ok(match);
         }
         catch (InvalidOperationException ex)
         {
-            return NotFound(ex.Message);
+            return NotFound(new { message = ex.Message });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
         }
     }
 
@@ -100,21 +105,22 @@ public class MatchController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteMatch(int id)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-
-        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
-
         try
         {
+            var userId = GetUserId();
+
             await _matchService.DeleteMatchAsync(userId, id);
 
             return NoContent();
         }
         catch (InvalidOperationException ex)
         {
-            return NotFound(ex.Message);
+            return NotFound(new { message = ex.Message });
         }
-        
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
+
     }
 }

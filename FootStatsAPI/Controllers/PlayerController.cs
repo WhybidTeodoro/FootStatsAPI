@@ -1,4 +1,5 @@
-﻿using FootStatsAPI.DTOs.Player;
+﻿using FootStats.API.Controllers;
+using FootStatsAPI.DTOs.Player;
 using FootStatsAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,7 @@ namespace FootStatsAPI.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class PlayerController : ControllerBase
+public class PlayerController : BaseController
 {
     private readonly IPlayerService _playerService;
 
@@ -27,14 +28,10 @@ public class PlayerController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> AddPlayer(CreatePlayerDto dto)
     {
-
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-
-        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
-
         try
         {
+            var userId = GetUserId();
+
             var player = await _playerService.AddPlayerAsync(userId, dto);
 
             return Created(string.Empty, player);
@@ -42,7 +39,11 @@ public class PlayerController : ControllerBase
         catch (InvalidOperationException ex)
         {
 
-            return NotFound(ex.Message);
+            return NotFound(new { message = ex.Message });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
         }
         catch (Exception)
         {
@@ -56,13 +57,10 @@ public class PlayerController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-
-        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
-
         try
         {
+            var userId = GetUserId();
+
             var player = await _playerService.GetByIdAsync(userId, id);
 
             return Ok(player);
@@ -71,9 +69,13 @@ public class PlayerController : ControllerBase
         catch (InvalidOperationException ex)
         {
 
-            return NotFound(ex.Message);
+            return NotFound(new { message = ex.Message });
         }
-        
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
+
     }
 
     /// <summary>
@@ -82,14 +84,10 @@ public class PlayerController : ControllerBase
     [HttpPut("{id}/profile")]
     public async Task<IActionResult> UpdatePLayerProfile(int id, UpdatePlayerProfileDto dto)
     {
-
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-
-        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
-
         try
         {
+            var userId = GetUserId();
+
             var player = await _playerService.UpdatePlayerProfileAsync(userId, id, dto);
     
             return Ok(player);
@@ -98,10 +96,14 @@ public class PlayerController : ControllerBase
         catch (InvalidOperationException ex)
         {
 
-            return NotFound(ex.Message);
+            return NotFound(new { message = ex.Message });
         }
-        
-   
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
+
+
     }
 
     /// <summary>
@@ -110,13 +112,10 @@ public class PlayerController : ControllerBase
     [HttpPut("{id}/stats")]
     public async Task<IActionResult> UpdatePlayerStats(int id, UpdatePlayerStatsDto dto)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-
-        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
-
         try
         {
+            var userId = GetUserId();
+
             var player = await _playerService.UpdatePlayerStatsAsync(userId, id, dto);
 
             return Ok(player);
@@ -124,7 +123,11 @@ public class PlayerController : ControllerBase
         catch (InvalidOperationException ex)
         {
 
-            return NotFound(ex.Message);
+            return NotFound(new { message = ex.Message });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
         }
     }
 
@@ -134,21 +137,22 @@ public class PlayerController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeletePlayer(int id)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-
-        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
-
         try
         {
+            var userId = GetUserId();
+
             await _playerService.DeletePlayerAsync(userId, id);
 
             return NoContent();
         }
         catch (InvalidOperationException ex)
         {
-            return NotFound(ex.Message);
+            return NotFound(new { message = ex.Message });
 
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
         }
     }
 }
