@@ -1,4 +1,5 @@
-﻿using FootStatsAPI.DTOs.Team;
+﻿using FootStats.API.Controllers;
+using FootStatsAPI.DTOs.Team;
 using FootStatsAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,7 @@ namespace FootStatsAPI.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class TeamController : ControllerBase
+public class TeamController : BaseController
 {
     private readonly ITeamService _teamService;
 
@@ -28,13 +29,9 @@ public class TeamController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> AddTeam(CreateTeamDto dto)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-
-        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out var userId))
-            return Unauthorized(new { message = "Token invalido ou usuario não autenticado" });
-
         try
         {
+            var userId = GetUserId();
             var result = await _teamService.AddTeamAsync(userId, dto);
             return Created(string.Empty, result);
         }
@@ -42,8 +39,10 @@ public class TeamController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
-
-        
+        catch(UnauthorizedAccessException ex)
+        {
+            return Unauthorized(ex.Message);
+        }
         catch (Exception)
         {
 
