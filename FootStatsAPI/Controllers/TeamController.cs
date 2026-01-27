@@ -28,9 +28,6 @@ public class TeamController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> AddTeam(CreateTeamDto dto)
     {
-        if(!ModelState.IsValid)
-            return BadRequest(ModelState);
-
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out var userId))

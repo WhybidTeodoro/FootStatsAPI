@@ -1,10 +1,7 @@
-﻿using FootStats.Infrastructure.Data;
-using FootStatsAPI.DTOs.Match;
-using FootStatsAPI.Models;
+﻿using FootStatsAPI.DTOs.Match;
 using FootStatsAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace FootStatsAPI.Controllers;
@@ -16,12 +13,10 @@ namespace FootStatsAPI.Controllers;
 [Authorize]
 public class MatchController : ControllerBase
 {
-    private readonly FootDbContext _context;
     private readonly IMatchService _matchService;
 
-    public MatchController(FootDbContext context, IMatchService matchService)
+    public MatchController(IMatchService matchService)
     {
-        _context = context;
         _matchService = matchService;
     }
 
@@ -31,10 +26,6 @@ public class MatchController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> AddMatch(CreateMatchDto dto)
     {
-
-        if(!ModelState.IsValid)
-            return BadRequest(ModelState);
-
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
@@ -86,9 +77,6 @@ public class MatchController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateMatch(int id, UpdateMatchDto dto)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))

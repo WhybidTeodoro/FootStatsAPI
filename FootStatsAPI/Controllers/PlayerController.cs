@@ -27,8 +27,6 @@ public class PlayerController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> AddPlayer(CreatePlayerDto dto)
     {
-        if(!ModelState.IsValid)
-            return BadRequest(ModelState);
 
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
@@ -84,8 +82,6 @@ public class PlayerController : ControllerBase
     [HttpPut("{id}/profile")]
     public async Task<IActionResult> UpdatePLayerProfile(int id, UpdatePlayerProfileDto dto)
     {
-        if(!ModelState.IsValid)
-            return BadRequest(ModelState);
 
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
@@ -114,10 +110,6 @@ public class PlayerController : ControllerBase
     [HttpPut("{id}/stats")]
     public async Task<IActionResult> UpdatePlayerStats(int id, UpdatePlayerStatsDto dto)
     {
-
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
