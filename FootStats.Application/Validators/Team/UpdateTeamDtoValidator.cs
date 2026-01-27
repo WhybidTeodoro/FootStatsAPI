@@ -9,6 +9,6 @@ public class UpdateTeamDtoValidator : AbstractValidator<UpdateTeamDto>
 	{
         RuleFor(t => t.Name)
             .NotEmpty().WithMessage("O Nome do time é obrigatório")
-            .MaximumLength(500).WithMessage("O Nome do time deve ter no máximo 50 caracteres");
+            .MaximumLength(50).WithMessage("O Nome do time deve ter no máximo 50 caracteres");
     }
 }

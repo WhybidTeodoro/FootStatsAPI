@@ -3,6 +3,9 @@ using FootStatsAPI.DTOs.Player;
 
 namespace FootStats.Application.Validators.Player;
 
+/// <summary>
+/// Responsavel pela validação dos dados na atualização das estatisticas do jogador
+/// </summary>
 public class UpdatePlayerStatsDtoValidator : AbstractValidator<UpdatePlayerStatsDto>
 {
     public UpdatePlayerStatsDtoValidator()
