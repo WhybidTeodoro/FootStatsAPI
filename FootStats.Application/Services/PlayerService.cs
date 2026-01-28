@@ -32,6 +32,11 @@ public class PlayerService : IPlayerService
         if (teamExists == null)
            throw new InvalidOperationException("Time não encontrado");
 
+        var playerExists = await _playerRepository.ExistsAsync(dto.Name, dto.Position, dto.ShirtNumber, dto.TeamId);
+
+        if (playerExists)
+            throw new InvalidOperationException("Jogador já registrado");
+
 
         var player = new Player
         {
@@ -44,11 +49,6 @@ public class PlayerService : IPlayerService
             MatchesPlayed = 0,
             CreatedAt = DateTime.UtcNow
         };
-
-        var playerExists = await _playerRepository.ExistsAsync(player.Name, player.Position, player.ShirtNumber, player.TeamId);
-
-        if (playerExists)
-            throw new InvalidOperationException("Jogador já registrado");
 
         await _playerRepository.AddAsync(player);
         await _playerRepository.SaveChangesAsync();
@@ -72,18 +72,24 @@ public class PlayerService : IPlayerService
     /// <summary>
     /// Atualiza o perfil de um jogador registrado em um time do usuario
     /// </summary>
-    public async Task<PlayerResponseDto> UpdatePlayerProfileAsync(int userId, int id, UpdatePlayerProfileDto dto)
+    public async Task<PlayerResponseDto> UpdatePlayerProfileAsync(int userId, int id, int teamId, UpdatePlayerProfileDto dto)
     {
         var player = await _playerRepository.GetByIdAsync(userId, id);
 
         if (player == null)
             throw new InvalidOperationException("Jogador não registrado");
 
+        var playerExists = await _playerRepository.ExistsAsync(dto.Name, dto.Position, dto.ShirtNumber, dto.TeamId);
+
+        if (playerExists)
+            throw new InvalidOperationException("Jogador já registrado");
+
         player.Name = dto.Name;
         player.Position = dto.Position;
         player.ShirtNumber = dto.ShirtNumber;
+        player.TeamId = dto.TeamId;
         player.UpdatedAt = DateTime.UtcNow;
-        
+
         await _playerRepository.UpdateAsync(player);
         await _playerRepository.SaveChangesAsync();
 

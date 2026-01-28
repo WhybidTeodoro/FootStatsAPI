@@ -16,4 +16,9 @@ public class UpdatePlayerProfileDto
     /// Numero da camisa
     /// </summary>
     public int ShirtNumber { get; set; }
+
+    /// <summary>
+    /// Identificador do time 
+    /// </summary>
+    public int TeamId { get; set; }
 }

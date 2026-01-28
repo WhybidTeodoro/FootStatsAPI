@@ -20,7 +20,7 @@ public interface IPlayerService
     /// <summary>
     /// Atualiza o perfil de um jogador registrado em um time do usuario
     /// </summary>
-    public Task<PlayerResponseDto> UpdatePlayerProfileAsync(int userId, int id, UpdatePlayerProfileDto dto);
+    public Task<PlayerResponseDto> UpdatePlayerProfileAsync(int userId, int id, int teamId, UpdatePlayerProfileDto dto);
 
     /// <summary>
     /// Atualiza as estatisticas de um jogador registrado em um time do usuario

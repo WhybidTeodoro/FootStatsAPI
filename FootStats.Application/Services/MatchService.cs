@@ -20,7 +20,7 @@ public class MatchService : IMatchService
     }
 
     /// <summary>
-    /// Adiciona um jogador a um time do usuario
+    /// Adiciona uma partida a um time do usuario
     /// </summary>
     public async Task<MatchResponseDto> AddMatchAsync(int userId, CreateMatchDto dto)
     {
