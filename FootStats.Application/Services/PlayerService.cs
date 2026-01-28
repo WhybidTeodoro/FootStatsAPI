@@ -53,16 +53,7 @@ public class PlayerService : IPlayerService
         await _playerRepository.AddAsync(player);
         await _playerRepository.SaveChangesAsync();
 
-        return new PlayerResponseDto
-        {
-            Id = player.Id,
-            Name = player.Name,
-            Position = player.Position,
-            ShirtNumber = player.ShirtNumber,
-            Goals = player.Goals,
-            Assists = player.Assists,
-            MatchesPlayed = player.MatchesPlayed
-        };
+        return MapToResponse(player);
     }
 
     /// <summary>
@@ -75,16 +66,7 @@ public class PlayerService : IPlayerService
         if (player == null)
             throw new InvalidOperationException("Jogador não registrado");
 
-        return new PlayerResponseDto
-        {
-            Id = player.Id,
-            Name = player.Name,
-            Position = player.Position,
-            ShirtNumber = player.ShirtNumber,
-            Goals = player.Goals,
-            Assists = player.Assists,
-            MatchesPlayed = player.MatchesPlayed
-        };
+        return MapToResponse(player);
     }
 
     /// <summary>
@@ -105,16 +87,7 @@ public class PlayerService : IPlayerService
         await _playerRepository.UpdateAsync(player);
         await _playerRepository.SaveChangesAsync();
 
-        return new PlayerResponseDto
-        {
-            Id = id,
-            Name = player.Name,
-            Position = player.Position,
-            ShirtNumber = player.ShirtNumber,
-            Goals = player.Goals,
-            Assists = player.Assists,
-            MatchesPlayed = player.MatchesPlayed
-        };
+        return MapToResponse(player);
     }
 
     /// <summary>
@@ -134,16 +107,7 @@ public class PlayerService : IPlayerService
         await _playerRepository.UpdateAsync(player);
         await _playerRepository.SaveChangesAsync();
 
-        return new PlayerResponseDto
-        {
-            Id = id,
-            Name = player.Name,
-            Position = player.Position,
-            ShirtNumber = player.ShirtNumber,
-            Goals = player.Goals,
-            Assists = player.Assists,
-            MatchesPlayed = player.MatchesPlayed
-        };
+        return MapToResponse(player);
     }
 
     /// <summary>
@@ -158,5 +122,22 @@ public class PlayerService : IPlayerService
 
         await _playerRepository.DeleteAsync(player);
         await _playerRepository.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Metodo que retorna os dados salvos do player
+    /// </summary>
+    private static PlayerResponseDto MapToResponse(Player player)
+    {
+        return new PlayerResponseDto
+        {
+            Id = player.Id,
+            Name = player.Name,
+            Position = player.Position,
+            ShirtNumber = player.ShirtNumber,
+            Goals = player.Goals,
+            Assists = player.Assists,
+            MatchesPlayed = player.MatchesPlayed
+        };
     }
 }
