@@ -42,15 +42,11 @@ public class TeamService : ITeamService
                 CreatedAt = DateTime.UtcNow
             };
 
-            await _teamRepository.AddAsync(team);
-            await _teamRepository.SaveChangesAsync();
+         await _teamRepository.AddAsync(team);
+         await _teamRepository.SaveChangesAsync();
 
-            return new TeamResponseDto
-            {
-                Id = team.Id,
-                Name = team.Name
-            };
-        
+            return MapToResponseTeam(team);
+
     }  
     
     /// <summary>
@@ -60,11 +56,7 @@ public class TeamService : ITeamService
     {
         var teams = await _teamRepository.GetAllByUserAsync(userId);
 
-       return teams.Select(teams => new TeamResponseDto
-       {
-           Id = teams.Id,
-           Name = teams.Name
-       }).ToList();
+       return teams.Select(MapToResponseTeam).ToList();
     }
     
     /// <summary>
@@ -77,11 +69,7 @@ public class TeamService : ITeamService
         if (team == null)
             throw new InvalidOperationException("Time não existe");
 
-        return new TeamResponseDto
-        {
-            Id = team.Id,
-            Name = team.Name
-        };
+        return MapToResponseTeam(team);
     }
 
     /// <summary>
@@ -97,16 +85,7 @@ public class TeamService : ITeamService
 
         var player = await _playerRepository.GetAllByTeamAsync(userId, teamId);
 
-        return player.Select(p => new PlayerResponseDto
-        {
-            Id = p.Id,
-            Name = p.Name,
-            Position = p.Position,
-            ShirtNumber = p.ShirtNumber,
-            Goals = p.Goals,
-            Assists = p.Assists,
-            MatchesPlayed = p.MatchesPlayed
-        }).ToList();
+        return player.Select(MapToResponsePlayer).ToList();
     }
     
     /// <summary>
@@ -121,14 +100,7 @@ public class TeamService : ITeamService
 
         var match = await _matchRepository.GetAllMatchesByTeamAsync(userId, teamId);
 
-        return match.Select(m => new MatchResponseDto
-            {
-                Id = m.Id,
-                MatchDate = m.MatchDate,
-                OpponentTeam = m.OpponentTeam,
-                GoalsFor = m.GoalsFor,
-                GoalsAgainst = m.GoalsAgainst
-            }).ToList();
+        return match.Select(MapToResponseMatch).ToList();
     }
 
     /// <summary>
@@ -147,11 +119,7 @@ public class TeamService : ITeamService
             await _teamRepository.UpdateAsync(team);
             await _teamRepository.SaveChangesAsync();
 
-            return new TeamResponseDto
-            {
-                Id = team.Id,
-                Name = team.Name
-            };
+            return MapToResponseTeam(team);
     }
 
     /// <summary>
@@ -169,4 +137,50 @@ public class TeamService : ITeamService
     }
 
 
+
+
+    /// <summary>
+    /// Metodo que retorna os dados salvos do Time
+    /// </summary>
+    private static TeamResponseDto MapToResponseTeam(Team team)
+    {
+        return new TeamResponseDto
+        {
+            Id = team.Id,
+            Name = team.Name
+        };
+    }
+
+    /// <summary>
+    /// Metodo que retorna os dados salvos do player
+    /// </summary>
+    private static PlayerResponseDto MapToResponsePlayer(Player player)
+    {
+        return new PlayerResponseDto
+        {
+            Id = player.Id,
+            Name = player.Name,
+            Position = player.Position,
+            ShirtNumber = player.ShirtNumber,
+            Goals = player.Goals,
+            Assists = player.Assists,
+            MatchesPlayed = player.MatchesPlayed
+        };
+    }
+
+    /// <summary>
+    /// Metodo que retorna os dados salvos da partida
+    /// </summary>
+    private static MatchResponseDto MapToResponseMatch(Match match)
+    {
+        return new MatchResponseDto
+        {
+            Id = match.Id,
+            MatchDate = match.MatchDate,
+            OpponentTeam = match.OpponentTeam,
+            GoalsFor = match.GoalsFor,
+            GoalsAgainst = match.GoalsAgainst,
+            TeamId = match.TeamId
+        };
+    }
 }
