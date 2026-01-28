@@ -42,15 +42,7 @@ public class MatchService : IMatchService
         await _matchRepository.AddAsync(match);
         await _matchRepository.SaveChangesAsync();
 
-        return new MatchResponseDto
-        {
-            Id = match.Id,
-            MatchDate = match.MatchDate,
-            OpponentTeam = match.OpponentTeam,
-            GoalsFor = match.GoalsFor,
-            GoalsAgainst = match.GoalsAgainst,
-            TeamId = match.TeamId
-        };
+        return MapToResponse(match);
     }
 
     /// <summary>
@@ -63,15 +55,7 @@ public class MatchService : IMatchService
         if (match == null)
             throw new InvalidOperationException("Partida não encontrada");
 
-        return new MatchResponseDto
-        {
-            Id = match.Id,
-            MatchDate = match.MatchDate,
-            OpponentTeam = match.OpponentTeam,
-            GoalsFor = match.GoalsFor,
-            GoalsAgainst = match.GoalsAgainst,
-            TeamId = match.TeamId
-        };
+        return MapToResponse(match);
     }
 
     /// <summary>
@@ -93,15 +77,7 @@ public class MatchService : IMatchService
         await _matchRepository.UpdateAsync(match);
         await _matchRepository.SaveChangesAsync();
 
-        return new MatchResponseDto
-        {
-            Id = match.Id,
-            MatchDate = match.MatchDate,
-            OpponentTeam = match.OpponentTeam,
-            GoalsFor = match.GoalsFor,
-            GoalsAgainst = match.GoalsAgainst,
-            TeamId = match.TeamId
-        };
+        return MapToResponse(match);
     }
 
     /// <summary>
@@ -116,5 +92,22 @@ public class MatchService : IMatchService
 
         await _matchRepository.DeleteAsync(match);
         await _matchRepository.SaveChangesAsync();
+    }
+
+
+    /// <summary>
+    /// Metodo que retorna os dados salvos da partida
+    /// </summary>
+    private static MatchResponseDto MapToResponse(Match match)
+    {
+        return new MatchResponseDto
+        {
+            Id = match.Id,
+            MatchDate = match.MatchDate,
+            OpponentTeam = match.OpponentTeam,
+            GoalsFor = match.GoalsFor,
+            GoalsAgainst = match.GoalsAgainst,
+            TeamId = match.TeamId
+        };
     }
 }
