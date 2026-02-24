@@ -3,7 +3,6 @@ using FootStatsAPI.DTOs.Player;
 using FootStatsAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace FootStatsAPI.Controllers;
 
@@ -82,13 +81,13 @@ public class PlayerController : BaseController
     /// Endpoint responsavel por atualizar os dados de perfil do jogador
     /// </summary>
     [HttpPut("{id}/profile")]
-    public async Task<IActionResult> UpdatePLayerProfile(int id, UpdatePlayerProfileDto dto)
+    public async Task<IActionResult> UpdatePLayerProfile(int id, int teamId, UpdatePlayerProfileDto dto)
     {
         try
         {
             var userId = GetUserId();
 
-            var player = await _playerService.UpdatePlayerProfileAsync(userId, id, dto);
+            var player = await _playerService.UpdatePlayerProfileAsync(userId, id, teamId, dto);
     
             return Ok(player);
 

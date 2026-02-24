@@ -1,4 +1,7 @@
-﻿using FootStats.API.Controllers;
+﻿using FootStats.API.Contracts.Query;
+using FootStats.API.Controllers;
+using FootStats.Application.Common.Pagination;
+using FootStats.Application.Common.Sorting;
 using FootStatsAPI.DTOs.Team;
 using FootStatsAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -53,13 +56,31 @@ public class TeamController : BaseController
     /// </summary>
     /// <returns></returns>
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(
+        [FromQuery] PaginationQueryParameters paginationQuery,
+        [FromQuery] SortQueryParameters sortQuery) 
     {
         try
         {
             var userId = GetUserId();
 
-            var teams = await _teamService.GetAllAsync(userId);
+            var (pageNumber, pageSize) = paginationQuery.ToNormalized();
+
+            var pagination = new PaginationParameters
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+
+            var (sortBy, sortDirectionText) = sortQuery.ToNormalized();
+
+            var sorting = new SortParameters
+            {
+                SortBy = sortBy,
+                Direction = SortParametersParser.ParseOrDefault(sortDirectionText)
+            };
+
+            var teams = await _teamService.GetAllAsync(userId, pagination, sorting);
 
             return Ok(teams);
 
@@ -103,13 +124,34 @@ public class TeamController : BaseController
     /// Endpoint responsavel por retornar todos os jogadores de um time
     /// </summary>
     [HttpGet("{teamId}/players")]
-    public async Task<IActionResult> GetAllPlayersByTeam(int teamId)
+    public async Task<IActionResult> GetAllPlayersByTeam(
+        int teamId,
+        [FromQuery] PaginationQueryParameters paginationQuery,
+        [FromQuery] SortQueryParameters sortQuery
+        )
     {
         try
         {
             var userId = GetUserId();
 
-            var players = await _teamService.GetAllPlayersByTeamAsync(userId, teamId);
+            var (pageNumber, pageSize) = paginationQuery.ToNormalized();
+
+            var pagination = new PaginationParameters
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize
+
+            };
+
+            var (sortBy, sortDirectionText) = sortQuery.ToNormalized();
+
+            var sorting = new SortParameters
+            {
+                SortBy = sortBy,
+                Direction = SortParametersParser.ParseOrDefault(sortDirectionText)
+            };
+
+            var players = await _teamService.GetAllPlayersByTeamAsync(userId, teamId, pagination, sorting);
 
             return Ok(players);
         }
@@ -129,13 +171,33 @@ public class TeamController : BaseController
     /// Endpoint responsavel por retornar todas as partidas de um time do usuario
     /// </summary>
     [HttpGet("{teamId}/matches")]
-    public async Task<IActionResult> GetAllMatchesByTeam(int teamId)
+    public async Task<IActionResult> GetAllMatchesByTeam(
+        int teamId,
+        [FromQuery] PaginationQueryParameters paginationQuery,
+        [FromQuery] SortQueryParameters sortQuery)
     {
         try
         {
             var userId = GetUserId();
 
-            var matches = await _teamService.GetAllMatchesByTeamAsync(userId, teamId);
+            var (pageNumber, pageSize) = paginationQuery.ToNormalized();
+
+            var pagination = new PaginationParameters
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize
+
+            };
+
+            var (sortBy, sortDirectionText) = sortQuery.ToNormalized();
+
+            var sorting = new SortParameters
+            {
+                SortBy = sortBy,
+                Direction = SortParametersParser.ParseOrDefault(sortDirectionText)
+            };
+
+            var matches = await _teamService.GetAllMatchesByTeamAsync(userId, teamId, pagination, sorting);
 
             return Ok(matches);
         }
