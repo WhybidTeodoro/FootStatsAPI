@@ -1,4 +1,6 @@
-﻿using FootStatsAPI.DTOs.Match;
+﻿using FootStats.Application.Common.Pagination;
+using FootStats.Application.Common.Sorting;
+using FootStatsAPI.DTOs.Match;
 using FootStatsAPI.DTOs.Player;
 using FootStatsAPI.DTOs.Team;
 
@@ -21,6 +23,11 @@ public interface ITeamService
     Task<List<TeamResponseDto>> GetAllAsync(int userId);
 
     /// <summary>
+    /// Retorna todos os times do usuario (com paginação e ordenação)
+    /// </summary>
+    Task<PagedResult<TeamResponseDto>> GetAllAsync(int userId, PaginationParameters pagination, SortParameters sorting);
+
+    /// <summary>
     /// Retorna um time do usuario
     /// </summary>
     Task<TeamResponseDto> GetByIdAsync(int userId, int id);
@@ -31,9 +38,19 @@ public interface ITeamService
     Task<List<PlayerResponseDto>> GetAllPlayersByTeamAsync(int userId, int teamId);
 
     /// <summary>
+    /// Retorna todos os jogadores de um time do usuario (com paginação e ordenação)
+    /// </summary>
+    Task<PagedResult<PlayerResponseDto>> GetAllPlayersByTeamAsync(int userId, int teamId, PaginationParameters pagination, SortParameters sorting);
+
+    /// <summary>
     /// Retorna todas as partidas de um time do usuario
     /// </summary>
     Task<List<MatchResponseDto>> GetAllMatchesByTeamAsync(int userId, int teamId);
+
+    /// <summary>
+    /// Retorna todas as partidas de um time do usuario (com paginação e ordenação)
+    /// </summary>
+    Task<PagedResult<MatchResponseDto>> GetAllMatchesByTeamAsync(int userId, int teamId, PaginationParameters pagination, SortParameters sorting);
 
     /// <summary>
     /// Atualiza um time do usuario
