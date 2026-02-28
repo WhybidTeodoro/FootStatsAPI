@@ -1,4 +1,6 @@
-﻿using FootStatsAPI.Models;
+﻿using FootStats.Application.Common.Pagination;
+using FootStats.Application.Common.Sorting;
+using FootStatsAPI.Models;
 
 namespace FootStats.Application.Services.Interfaces.Repositories;
 
@@ -16,6 +18,11 @@ public interface ITeamRepository
     /// Metodo para retornar todos os times do usuario do DB
     /// </summary>
     Task<List<Team>> GetAllByUserAsync(int userId);
+
+    /// <summary>
+    /// Metodo para retornar todos os times do usuario do DB com paginação e ordenação  
+    /// </summary>
+    Task<PagedResult<Team>> GetAllByUserAsync(int userId, PaginationParameters pagination, SortParameters sorting);
 
     /// <summary>
     /// Metodo para retornar um time do usuario pelo id do DB

@@ -1,4 +1,6 @@
-﻿using FootStatsAPI.Models;
+﻿using FootStats.Application.Common.Pagination;
+using FootStats.Application.Common.Sorting;
+using FootStatsAPI.Models;
 
 namespace FootStats.Application.Services.Interfaces.Repositories;
 
@@ -17,6 +19,11 @@ public interface IMatchRepository
     /// Metodo que retorna uma lista com todas as partidas de um time do usuario no DB
     /// </summary>
     Task<List<Match>> GetAllMatchesByTeamAsync(int userId, int teamId);
+
+    /// <summary>
+    /// Metodo que retorna uma lista com todas as partidas de um time do usuario no DB
+    /// </summary>
+    Task<PagedResult<Match>> GetAllMatchesByTeamAsync(int userId, int teamId, PaginationParameters pagination, SortParameters sorting);
 
     /// <summary>
     /// Metodo que retorna uma partida de um time do usuario no DB

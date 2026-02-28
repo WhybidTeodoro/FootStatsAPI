@@ -1,4 +1,6 @@
-﻿using FootStatsAPI.Models;
+﻿using FootStats.Application.Common.Pagination;
+using FootStats.Application.Common.Sorting;
+using FootStatsAPI.Models;
 
 namespace FootStats.Application.Services.Interfaces.Repositories;
 
@@ -17,6 +19,11 @@ public interface IPlayerRepository
     /// Metodo que retorna uma lista de todos os jogadores de um time do usuario do DB
     /// </summary>
     Task<List<Player>> GetAllByTeamAsync(int userId, int teamId);
+
+    /// <summary>
+    /// Metodo que retorna uma lista de todos os jogadores de um time do usuario do DB
+    /// </summary>
+    Task<PagedResult<Player>> GetAllByTeamAsync(int userId, int teamId, PaginationParameters pagination, SortParameters sorting);
 
     /// <summary>
     /// Metodo que retorna um jogador de um time do usario do DB
