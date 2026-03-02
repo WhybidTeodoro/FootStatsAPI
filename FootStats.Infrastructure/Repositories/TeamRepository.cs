@@ -1,4 +1,6 @@
-﻿using FootStats.Application.Services.Interfaces.Repositories;
+﻿using FootStats.Application.Common.Pagination;
+using FootStats.Application.Common.Sorting;
+using FootStats.Application.Services.Interfaces.Repositories;
 using FootStats.Infrastructure.Data;
 using FootStatsAPI.Models;
 using Microsoft.EntityFrameworkCore;
@@ -35,12 +37,32 @@ public class TeamRepository : ITeamRepository
     }
 
     /// <summary>
+    /// Retorna times do usuário com ordenação + paginação aplicadas no banco.
+    /// </summary>
+    public async Task<PagedResult<Team>> GetPagedByUserAsync(int userId, PaginationParameters pagination, SortParameters sorting)
+    {
+        IQueryable<Team> query = _context.Teams.AsNoTracking().Where(t => t.UserId == userId);
+
+        query = ApplyOrdering(query, sorting);
+
+        var totalCount = await query.CountAsync();
+
+        var skip = pagination.GetSkipCount();
+
+        var items = await query.Skip(skip).Take(pagination.PageSize).ToListAsync();
+
+        return PagedResult<Team>.From(items : items, pageNumber : pagination.PageNumber, pageSize: pagination.PageSize, totalCount:  totalCount);
+    }
+
+    /// <summary>
     /// Metodo para retornar um time do usuario pelo id do DB
     /// </summary>
     public async Task<Team?> GetByIdAsync(int userId, int teamId)
     {
         return await _context.Teams.FirstOrDefaultAsync(t => t.UserId == userId && t.Id == teamId);
     }
+
+
 
     /// <summary>
     /// Metodo para verificar se um time que vai ser adicionado ja existe no DB
@@ -76,4 +98,40 @@ public class TeamRepository : ITeamRepository
         await _context.SaveChangesAsync();
     }
 
+    /// <summary>
+    /// Aplica ordenação segura (whitelist) no IQueryable.
+    /// </summary>
+    private static IQueryable<Team> ApplyOrdering(IQueryable<Team> query, SortParameters sorting)
+    {
+        
+        var sortBy = NormalizeSortBy(sorting.SortBy);
+
+        return sortBy switch
+        {
+            "name" => sorting.Direction == SortDirection.Desc
+                ? query.OrderByDescending(t => t.Name).ThenByDescending(t => t.Id)
+                : query.OrderBy(t => t.Name).ThenBy(t => t.Id),
+
+            "createdat" => sorting.Direction == SortDirection.Desc
+                ? query.OrderByDescending(t => t.CreatedAt).ThenByDescending(t => t.Id)
+                : query.OrderBy(t => t.CreatedAt).ThenBy(t => t.Id),
+
+            _ => sorting.Direction == SortDirection.Desc
+                ? query.OrderByDescending(t => t.Id)
+                : query.OrderBy(t => t.Id)
+        };
+    }
+
+    /// <summary>
+    /// Normaliza SortBy
+    /// </summary>
+    private static string NormalizeSortBy(string? sortBy)
+    {
+        if (string.IsNullOrWhiteSpace(sortBy))
+            return "id";
+
+        return sortBy.Trim().ToLowerInvariant();
+    }
+
+   
 }

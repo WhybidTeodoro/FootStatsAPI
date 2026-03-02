@@ -22,7 +22,7 @@ public interface ITeamRepository
     /// <summary>
     /// Metodo para retornar todos os times do usuario do DB com paginação e ordenação  
     /// </summary>
-    Task<PagedResult<Team>> GetAllByUserAsync(int userId, PaginationParameters pagination, SortParameters sorting);
+    Task<PagedResult<Team>> GetPagedByUserAsync(int userId, PaginationParameters pagination, SortParameters sorting);
 
     /// <summary>
     /// Metodo para retornar um time do usuario pelo id do DB
