@@ -23,7 +23,7 @@ public interface IPlayerRepository
     /// <summary>
     /// Metodo que retorna uma lista de todos os jogadores de um time do usuario do DB
     /// </summary>
-    Task<PagedResult<Player>> GetAllByTeamAsync(int userId, int teamId, PaginationParameters pagination, SortParameters sorting);
+    Task<PagedResult<Player>> GetPagedByTeamAsync(int userId, int teamId, PaginationParameters pagination, SortParameters sorting);
 
     /// <summary>
     /// Metodo que retorna um jogador de um time do usario do DB

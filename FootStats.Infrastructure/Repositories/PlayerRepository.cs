@@ -1,4 +1,6 @@
-﻿using FootStats.Application.Services.Interfaces.Repositories;
+﻿using FootStats.Application.Common.Pagination;
+using FootStats.Application.Common.Sorting;
+using FootStats.Application.Services.Interfaces.Repositories;
 using FootStats.Infrastructure.Data;
 using FootStatsAPI.Models;
 using Microsoft.EntityFrameworkCore;
@@ -33,6 +35,27 @@ namespace FootStats.Infrastructure.Repositories
         public async Task<List<Player>> GetAllByTeamAsync(int userId, int teamId)
         {
             return await _context.Players.Where(p => p.Team.UserId == userId && p.TeamId == teamId).ToListAsync();
+        }
+
+        /// <summary>
+        /// Retorna jogadores de um time do usuário com ordenação + paginação.
+        /// </summary>
+        public async Task<PagedResult<Player>> GetPagedByTeamAsync(int userId, int teamId, PaginationParameters pagination, SortParameters sorting)
+        {
+            IQueryable<Player> query = _context.Players.AsNoTracking().Where(p => p.Team.UserId == userId && p.TeamId == teamId);
+
+            query = ApplyOrdering(query, sorting);
+
+            var totalCount = await query.CountAsync();
+
+            var skip = pagination.GetSkipCount();
+
+            var items = await query.Skip(skip).Take(pagination.PageSize).ToListAsync();
+
+            return PagedResult<Player>.From(items: items, 
+                pageNumber: pagination.PageNumber, 
+                pageSize: pagination.PageSize, 
+                totalCount: totalCount);
         }
 
         /// <summary>
@@ -78,6 +101,56 @@ namespace FootStats.Infrastructure.Repositories
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Aplica ordenação segura no IQueryable.
+        /// </summary>
+        private static IQueryable<Player> ApplyOrdering(IQueryable<Player> query, SortParameters sorting)
+        {
+            var sortBy = NormalizeSortBy(sorting.SortBy);
+
+            return sortBy switch 
+            {
+                "name" => sorting.Direction == SortDirection.Desc
+                    ? query.OrderByDescending(p => p.Name).ThenByDescending(p => p.Id)
+                    : query.OrderBy(p => p.Name).ThenBy(p => p.Id),
+
+                "position" => sorting.Direction == SortDirection.Desc
+                    ? query.OrderByDescending(p => p.Position).ThenByDescending(p => p.Id)
+                    : query.OrderBy(p => p.Position).ThenBy(p => p.Id),
+
+                "goals" => sorting.Direction == SortDirection.Desc
+                    ? query.OrderByDescending(p => p.Goals).ThenByDescending(p => p.Id)
+                    : query.OrderBy(p => p.Goals).ThenBy(p => p.Id),
+
+                "assists" => sorting.Direction == SortDirection.Desc
+                    ? query.OrderByDescending(p => p.Assists).ThenByDescending(p => p.Id)
+                    : query.OrderBy(p => p.Assists).ThenBy(p => p.Id),
+
+                "matchesplayed" => sorting.Direction == SortDirection.Desc
+                    ? query.OrderByDescending(p => p.MatchesPlayed).ThenByDescending(p => p.Id)
+                    : query.OrderBy(p => p.MatchesPlayed).ThenBy(p => p.Id),
+
+                "shirtnumber" => sorting.Direction == SortDirection.Desc
+                    ? query.OrderByDescending(p => p.ShirtNumber).ThenByDescending(p => p.Id)
+                    : query.OrderBy(p => p.ShirtNumber).ThenBy(p => p.Id),
+
+                _ => sorting.Direction == SortDirection.Desc
+                    ? query.OrderByDescending(p => p.Id)
+                    : query.OrderBy(p => p.Id)
+            };
+        }
+
+        /// <summary>
+        /// Normaliza SortBy
+        /// </summary>
+        private static string NormalizeSortBy(string? sortBy)
+        {
+            if (string.IsNullOrWhiteSpace(sortBy))
+                return "id";
+
+            return sortBy.Trim().ToLowerInvariant();
         }
     }
 }
