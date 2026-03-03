@@ -6,6 +6,7 @@ using FootStatsAPI.DTOs.Player;
 using FootStatsAPI.DTOs.Team;
 using FootStatsAPI.Models;
 using FootStatsAPI.Services.Interfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace FootStatsAPI.Services;
@@ -69,15 +70,12 @@ public class TeamService : ITeamService
     /// </summary>
     public async Task<PagedResult<TeamResponseDto>> GetAllAsync(int userId, PaginationParameters pagination, SortParameters sorting)
     {
-        NormalizePagination(pagination);
+        var teams = await _teamRepository.GetPagedByUserAsync(userId, pagination, sorting);
 
-        var teams = await _teamRepository.GetAllByUserAsync(userId);
+        var dtoItems = teams.Items.Select(MapToResponseTeam).ToList();
 
-        var dtos = teams.Select(MapToResponseTeam).ToList();
-
-        var ordered = ApplyTeamSorting(dtos, sorting);
-
-        return ToPagedResult(ordered, pagination);
+        return PagedResult<TeamResponseDto>.From(items: dtoItems, pageNumber: teams.PageNumber, pageSize: teams.PageSize, totalCount: teams.TotalCount);
+    
     }
     
     /// <summary>
@@ -96,42 +94,26 @@ public class TeamService : ITeamService
     /// <summary>
     /// Retorna todos os jogadores de um time do usuario
     /// </summary>
-    public async Task<List<PlayerResponseDto>> GetAllPlayersByTeamAsync(int userId, int teamId)
-    {
-
-        var team = await _teamRepository.GetByIdAsync(userId, teamId);
-
-        if (team == null)
-            throw new InvalidOperationException("Time não encontrado");
-
-        var player = await _playerRepository.GetAllByTeamAsync(userId, teamId);
-
-        return player.Select(MapToResponsePlayer).ToList();
-    }
-
-    /// <summary>
-    /// Retorna todos os jogadores de um time do usuario (com paginação e ordenação).
-    /// </summary>
     public async Task<PagedResult<PlayerResponseDto>> GetAllPlayersByTeamAsync(int userId, int teamId, PaginationParameters pagination, SortParameters sorting)
     {
-        NormalizePagination(pagination);
 
-       
+        
         var team = await _teamRepository.GetByIdAsync(userId, teamId);
         if (team == null)
             throw new InvalidOperationException("Time não encontrado");
 
-        
-        var players = await _playerRepository.GetAllByTeamAsync(userId, teamId);
+        var players = await _playerRepository
+            .GetPagedByTeamAsync(userId, teamId, pagination, sorting);
+        var dtoItems = players.Items
+            .Select(MapToResponsePlayer)
+            .ToList();
 
-        var dtos = players.Select(MapToResponsePlayer).ToList();
-
-        var ordered = ApplyPlayerSorting(dtos, sorting);
-
-        return ToPagedResult(ordered, pagination);
+        return PagedResult<PlayerResponseDto>.From(
+            items: dtoItems,
+            pageNumber: players.PageNumber,
+            pageSize: players.PageSize,
+            totalCount: players.TotalCount);
     }
-
- 
 
     /// <summary>
     /// Retorna todas as partidas de um time do usuario
@@ -153,19 +135,22 @@ public class TeamService : ITeamService
     /// </summary>
     public async Task<PagedResult<MatchResponseDto>> GetAllMatchesByTeamAsync(int userId, int teamId, PaginationParameters pagination, SortParameters sorting)
     {
-        NormalizePagination(pagination);
-
-        var teamExists = await _teamRepository.GetByIdAsync(userId, teamId);
-        if (teamExists == null)
+        var team = await _teamRepository.GetByIdAsync(userId, teamId);
+        if (team == null)
             throw new InvalidOperationException("Time não encontrado");
 
-        var matches = await _matchRepository.GetAllMatchesByTeamAsync(userId, teamId);
+        var pagedMatches = await _matchRepository
+            .GetPagedByTeamAsync(userId, teamId, pagination, sorting);
 
-        var dtos = matches.Select(MapToResponseMatch).ToList();
+        var dtoItems = pagedMatches.Items
+            .Select(MapToResponseMatch)
+            .ToList();
 
-        var ordered = ApplyMatchSorting(dtos, sorting);
-
-        return ToPagedResult(ordered, pagination);
+        return PagedResult<MatchResponseDto>.From(
+            items: dtoItems,
+            pageNumber: pagedMatches.PageNumber,
+            pageSize: pagedMatches.PageSize,
+            totalCount: pagedMatches.TotalCount);
     }
 
     /// <summary>
