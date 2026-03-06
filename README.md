@@ -1,79 +1,139 @@
 # ⚽ FootStats API
 
-API REST desenvolvida em **ASP.NET Core** para fins de **aprendizado**, com o objetivo de praticar conceitos fundamentais de **backend em .NET**.
+![.NET](https://img.shields.io/badge/.NET-8.0-purple)
+![C#](https://img.shields.io/badge/C%23-Backend-blue)
+![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
 
-O projeto permite que usuários se cadastrem, criem times de futebol, adicionem jogadores, registrem partidas e visualizem **estatísticas básicas de desempenho**.
+API REST desenvolvida em **ASP.NET Core (.NET 8)** com foco em aprendizado de desenvolvimento backend.
+
+O projeto permite que usuários se cadastrem, criem times de futebol, adicionem jogadores, registrem partidas e acompanhem estatísticas básicas de desempenho.
 
 ---
 
-## 🎯 Objetivo do Projeto
+# 🎯 Objetivo do Projeto
 
-Este projeto foi desenvolvido como parte do meu **processo de aprendizado em desenvolvimento backend**, com foco em:
+Este projeto foi desenvolvido como parte do meu processo de aprendizado em **desenvolvimento backend com .NET**, com foco em:
 
 - Entender como funciona uma **API REST**
 - Praticar **C# e ASP.NET Core**
-- Aprender a trabalhar com **banco de dados relacional**
-- Aplicar conceitos básicos de **autenticação e autorização**
+- Trabalhar com **banco de dados relacional**
+- Implementar **autenticação com JWT**
+- Aplicar conceitos de **arquitetura de software**
 
 ---
 
-## 🔧 Tecnologias Utilizadas
+# 🧱 Arquitetura do Projeto
 
-- **ASP.NET Core (.Net 8.0)**
+O projeto foi organizado utilizando uma estrutura inspirada em **Clean Architecture**, separando responsabilidades em diferentes camadas:
+
+- FootStats.API → Controllers e configuração da aplicação
+- FootStats.Application → Regras de negócio, DTOs e validações
+- FootStats.Domain → Entidades do domínio
+- FootStats.Infrastructure→ Acesso a dados e repositórios
+
+---
+
+# 🔧 Tecnologias Utilizadas
+
+- **ASP.NET Core (.NET 8)**
 - **C#**
 - **Entity Framework Core**
-- **MySql**
+- **MySQL**
 - **JWT Authentication**
+- **FluentValidation**
 - **Swagger (OpenAPI)**
+- **xUnit** (Testes unitários)
+- **FluentAssertions**
 
 ---
 
-## 🚀 Funcionalidades Implementadas
+# 🚀 Funcionalidades Implementadas
 
-- 👤 Cadastro e login de usuário com **JWT**
-- ⚽ Cadastro, edição, listagem e remoção de **Times**
-- 🧑‍🤝‍🧑 Cadastro de **Jogadores** vinculados a um time
-- 🏟️ Registro de **Partidas**
-- 📊 Estatísticas calculadas automaticamente:
-  - Partidas disputadas
-  - Vitórias, derrotas e empates
-  - Gols feitos, gols sofridos e saldo de gols
-- 🔒 Cada usuário acessa apenas seus próprios dados
+### 👤 Usuários
+- Cadastro de usuário
+- Login com autenticação JWT
+- Acesso protegido por autenticação
+
+### ⚽ Times
+- Criar time
+- Atualizar time
+- Listar times
+- Remover time
+
+### 🧑‍🤝‍🧑 Jogadores
+- Adicionar jogadores a um time
+- Atualizar dados do jogador
+- Remover jogador
+- Listar jogadores por time
+
+### 🏟️ Partidas
+- Registrar partidas de um time
+- Atualizar partidas
+- Remover partidas
+- Listar partidas de um time
+
+### 📊 Estatísticas
+As estatísticas são calculadas automaticamente:
+
+- Partidas disputadas
+- Gols marcados
+- Assistências
+- Vitórias, derrotas e empates
+- Gols feitos e sofridos
+
+### 📄 Paginação e Ordenação
+Endpoints de listagem suportam:
+
+- **Paginação**
+- **Ordenação por campos**
+- Controle de tamanho de página
+
+Exemplo:
+
+GET /api/team?pageNumber=1&pageSize=10&sortBy=name&direction=asc
 
 ---
 
-## 🧠 Conceitos Aprendidos e Praticados
+# 🧪 Testes Unitários
 
-- Criação de **APIs REST**
-- Uso de **DTOs** para entrada e saída de dados
-- Relacionamento entre entidades no banco de dados
-- Autenticação e autorização com **JWT**
-- Validações usando **Data Annotations**
-- Organização básica de um projeto backend
-- Uso do **Swagger** para documentação e testes
+O projeto possui testes unitários utilizando:
 
----
+- **xUnit**
+- **FluentAssertions**
 
-## 🛠️ Como Executar o Projeto
+Atualmente existem testes para:
 
-1. Clone este repositório
-2. Configure a string de conexão com o **MySql**
-3. Execute as migrações do Entity Framework
-4. Inicie a aplicação
-5. Acesse a documentação da API via Swagger
-
+- Paginação (`PaginationParameters`)
+- Cálculo de páginas (`PagedResult`)
+- Parser de ordenação (`SortParametersParser`)
+- Validators de paginação e ordenação
 
 ---
 
-## 📌 Observações
+# 🛠️ Como Executar o Projeto
 
-- Projeto desenvolvido com foco **educacional**
-- Não possui frontend, apenas **API**
-- Estrutura simples, pensada para facilitar o entendimento do código
+1️⃣ Clone o repositório
+
+2️⃣ Configure a **connection string do MySQL**
+
+3️⃣ Execute as migrações do Entity Framework
+
+4️⃣ Execute a aplicação
+
+5️⃣ Acesse o Swagger
 
 ---
 
-## 👨‍💻 Whybid Teodoro
+# 📌 Observações
 
-Projeto desenvolvido para **estudo e portfólio**, com foco em evolução profissional na área de desenvolvimento backend em **.NET**.
+- Projeto desenvolvido com **foco em aprendizado**
+- Não possui frontend (apenas API)
+- Estrutura pensada para facilitar aprendizado de backend com .NET
 
+---
+
+# 👨‍💻 Autor
+
+**Whybid Teodoro**
+
+Projeto desenvolvido para estudo e portfólio, com foco em evolução profissional como **desenvolvedor backend .NET**.
