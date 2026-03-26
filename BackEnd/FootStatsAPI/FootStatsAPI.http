@@ -1,0 +1,6 @@
+@FootStatsAPI_HostAddress = http://localhost:5227
+
+GET {{FootStatsAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
