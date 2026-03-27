@@ -1,7 +1,0 @@
-<Solution>
-  <Project Path="FootStats.Application/FootStats.Application.csproj" Id="ba82c3af-325e-40db-8f3d-33ef4662b3c3" />
-  <Project Path="FootStats.Domain/FootStats.Domain.csproj" Id="8082f466-a388-4cb3-9aa8-74e5c031bb8e" />
-  <Project Path="FootStats.Infrastructure/FootStats.Infrastructure.csproj" Id="55a47aae-b239-4485-b8be-84d88807b6f7" />
-  <Project Path="FootStats.Tests/FootStats.Tests.csproj" Id="00ca381a-80c2-45ee-9c1e-44592ad89122" />
-  <Project Path="FootStatsAPI/FootStats.API.csproj" />
-</Solution>
