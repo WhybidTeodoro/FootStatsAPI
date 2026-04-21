@@ -24,7 +24,7 @@
         <section>
             <h2>Buscar Times</h2>
 
-            <form>
+            <form id="teamForm">
                 <label for="teamName">Nome do Time:</label>
                 <input type="text" id ="teamName" name="teamName" placeholder="Digite o nome do time">
 
@@ -53,7 +53,7 @@
                     </tr>
                 </thead>
 
-                <tbody>
+                <tbody id="teamsTable">
                     <tr>
                         <td>1</td>
                         <td>Impedidos</td>
@@ -67,10 +67,10 @@
             </table>
         </section>
 
-        <section>
+        <section id="teamStats">
             <h2>Estatisticas do Time</h2>
 
-            <ul>
+            <ul id="statsList">
                 <li>Total de Partidas: 10</li>
                 <li>Vitórias: 6</li>
                 <li>Derrotas: 2</li>
