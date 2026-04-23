@@ -97,3 +97,16 @@ form input, form select{
     border: 1px solid #ccc;
     border-radius: 5px;
 }
+
+form button{
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+form button:hover{
+    background-color: #1d4ed8;
+}
