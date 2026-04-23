@@ -69,3 +69,11 @@ th, td{
     text-align: left;
     border-bottom: 1px solid #ddd;
 }
+
+tbody tr:nth-child(even){
+    background-color: #f9fafb;
+}
+
+tbody tr:hover{
+    background-color: #e2e8f0;
+}
