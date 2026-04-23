@@ -58,3 +58,14 @@ table{
     border-collapse: collapse;
     margin-top: 20px;
 }
+
+thead{
+    background-color: #1e293b;
+    color: white;
+}
+
+th, td{
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
