@@ -77,3 +77,23 @@ tbody tr:nth-child(even){
 tbody tr:hover{
     background-color: #e2e8f0;
 }
+
+/* FORMULARIOS */
+
+form{
+    margin-top: 15px;
+}
+
+form label{
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+form input, form select{
+    width: 100px;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
