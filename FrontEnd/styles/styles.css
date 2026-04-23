@@ -5,6 +5,13 @@
     box-sizing: border-box;
 }
 
+
+header{
+    background-color: #1e293b;
+    color: white;
+    padding: 15px 20px;
+}
+
 /* ESTILO GLOBAL */
 
 body{
