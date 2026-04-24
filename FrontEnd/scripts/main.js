@@ -1,10 +1,14 @@
-const teamsTable = document.getElementById("teamsTable");
+function loadTeams() {
+    const teamsTable = document.getElementById("teamsTable");
 
-if (teamsTable) {
     teamsTable.innerHTML = `
         <tr>
-            <td>99</td>
-            <td>Time Teste JS</td>
+            <td>1</td>
+            <td>Carregado via função</td>
         </tr>
     `;
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    loadTeams();
+});
