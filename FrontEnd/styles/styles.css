@@ -6,15 +6,6 @@
 }
 
 
-header{
-    background-color: #1e293b;
-    color: white;
-    padding: 15px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
 /* ESTILO GLOBAL */
 
 body{
@@ -24,15 +15,22 @@ body{
     line-height: 1.6;
 }
 
+/* HEADER */
+header{
+    background-color: #1e293b;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* NAV */
 h1{
     margin-bottom: 10px;
 }
 h2{
     margin-bottom: 10px;
-}
-
-main{
-    padding: 20px;
 }
 
 nav ul{
@@ -51,14 +49,14 @@ nav a:hover{
     color: #38bdf8;
 }
 
-
+/* MAIN */
 main{
     max-width: 1000px;
     margin: 0 auto;
     padding: 20px;
 }
-/* TABELA */
 
+/* TABELA */
 table{
     width: 100%;
     border-collapse: collapse;
@@ -97,7 +95,7 @@ form label{
 }
 
 form input, form select{
-    width: 100px;
+    width: 100%;
     padding: 8px;
     margin-bottom: 15px;
     border: 1px solid #ccc;
@@ -117,9 +115,11 @@ form button:hover{
     background-color: #1d4ed8;
 }
 
+/* SECTION */
 section{
     background-color: white;
     padding: 20px;
     border-radius: 8px;
     margin-bottom: 30px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
