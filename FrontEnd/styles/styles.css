@@ -51,6 +51,12 @@ nav a:hover{
     color: #38bdf8;
 }
 
+
+main{
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
 /* TABELA */
 
 table{
@@ -109,4 +115,8 @@ form button{
 
 form button:hover{
     background-color: #1d4ed8;
+}
+
+section{
+    margin-bottom: 30px;
 }
