@@ -14,7 +14,7 @@ namespace FootStatsAPI.Controllers;
 /// </summary>
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
+[AllowAnonymous]
 public class TeamController : BaseController
 {
     private readonly ITeamService _teamService;
@@ -33,7 +33,7 @@ public class TeamController : BaseController
     {
         try
         {
-            var userId = GetUserId();
+            var userId = 1;
             var result = await _teamService.AddTeamAsync(userId, dto);
             return Created(string.Empty, result);
         }
@@ -56,13 +56,14 @@ public class TeamController : BaseController
     /// </summary>
     /// <returns></returns>
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAll(
         [FromQuery] PaginationQueryParameters paginationQuery,
         [FromQuery] SortQueryParameters sortQuery) 
     {
         try
         {
-            var userId = GetUserId();
+            var userId = 1;
 
             var (pageNumber, pageSize) = paginationQuery.ToNormalized();
 
@@ -102,7 +103,7 @@ public class TeamController : BaseController
     {
         try
         {
-            var userId = GetUserId();
+            var userId = 1;
 
             var team = await _teamService.GetByIdAsync(userId, teamId);
 
@@ -132,7 +133,7 @@ public class TeamController : BaseController
     {
         try
         {
-            var userId = GetUserId();
+            var userId = 1;
 
             var (pageNumber, pageSize) = paginationQuery.ToNormalized();
 
@@ -178,7 +179,7 @@ public class TeamController : BaseController
     {
         try
         {
-            var userId = GetUserId();
+            var userId = 1;
 
             var (pageNumber, pageSize) = paginationQuery.ToNormalized();
 
@@ -219,7 +220,7 @@ public class TeamController : BaseController
     {
         try
         {
-            var userId = GetUserId();
+            var userId = 1;
 
             var team = await _teamService.UpdateTeamAsync(userId, teamId, dto);
 
@@ -244,7 +245,7 @@ public class TeamController : BaseController
     {
         try
         {
-            var userId = GetUserId();
+            var userId = 1;
 
             await _teamService.DeleteTeamAsync(userId, teamId);
 
