@@ -1,9 +1,22 @@
 const API_BASE_URL = "https://localhost:7198/api";
 
 
-async function getTeams() {
+async function getTeams(name = "", sortBy = "name") {
     try {
-        const response = await fetch(`${API_BASE_URL}/team`);
+
+        let url = `${API_BASE_URL}/team?pageNumber=1&pagesize=20 `;
+
+        if(name){
+            url += `&name=${encodeURIComponent(name)}`;
+        }
+
+        if(sortBy){
+            url += `&sortBy=${sortBy}`;
+        }
+
+        console.log("Url da requisição", url);
+
+        const response = await fetch(url);
 
         if (!response.ok) {
             throw new Error("Erro ao buscar times na API");
@@ -13,7 +26,6 @@ async function getTeams() {
 
         console.log("Resposta da API:", data);
 
-        // 👇 IMPORTANTE
         renderTeams(data.items);
 
     } catch (error) {
@@ -47,6 +59,21 @@ function renderTeams(teams){
     table.innerHTML = rows;
 }
 
+function handleSearch(event){
+    event.preventDefault();
+
+    const name = document.getElementById("teamName").value;
+    const sortBy = document.getElementById("sortBy").value;
+
+    getTeams(name, sortBy);
+}
+
 document.addEventListener("DOMContentLoaded", () =>{
     getTeams();
-})
+
+    const form = document.getElementById("teamForm");
+
+    if(form){
+        form.addEventListener("submit", handleSearch);
+    }
+});
