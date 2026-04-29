@@ -47,18 +47,17 @@ function renderTeams(teams){
 
     table.innerHTML = "";
 
-    if (!Array.isArray(teams)) {
-        console.error("teams não é um array:", teams);
-        return;
-    }
-
     let rows = "";
 
     teams.forEach(team => {
         rows += `
             <tr>
                 <td>${team.id}</td>
-                <td>${team.name}</td>
+                <td>
+                    <a href="#" onClick="loadTeamStats(${team.id})">
+                        ${team.name}    
+                    </a>                    
+                </td>
             </tr>`;
     });
 
@@ -87,6 +86,43 @@ function renderPagination(data){
     pageInfo.innerText = `Página ${data.pageNumber} de ${totalPages}`;
 
     nextBtn.disabled = data.pageNumber >= totalPages;
+}
+
+function renderTeamStats(stats){
+    const statsList = document.getElementById("statsList");
+
+    if(!statsList) return;
+
+    statsList.innerHTML = `
+        <li>Total de Partidas: ${stats.totalMatches}</li>
+        <li>Vitórias: ${stats.wins}</li>
+        <li>Derrotas: ${stats.losses}</li>
+        <li>Empates: ${stats.draws}</li>
+        <li>Gols Pró: ${stats.totalGoalsFor}</li>
+        <li>Gols Contra: ${stats.totalGoalsAgainst}</li>
+        <li>Saldo de Gols: ${stats.goalDifference}</li>
+        `;
+}
+
+async function loadTeamStats(teamId){
+    try{
+        console.log("Buscando stats do time: ", teamId);
+
+        const response = await fetch(`${API_BASE_URL}/Stats/team/${teamId}/stats`);
+
+        if(!response.ok){
+            throw new Error("Erro ao buscar estatisticas do time");
+        }
+
+        const data = await response.json();
+
+        console.log("stats recebidas", data);
+
+        renderTeamStats(data);
+    }
+    catch(error){
+        console.error("erro ao buscar stats:", error);
+    }
 }
 
 document.addEventListener("DOMContentLoaded", () =>{
