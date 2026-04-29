@@ -1,17 +1,22 @@
 const API_BASE_URL = "https://localhost:7198/api";
 
+let currentPage = 1;
+let pagesize = 10;
 
-async function getTeams(name = "", sortBy = "name") {
+let currentName = "";
+let currentSortBy = "name";
+
+async function getTeams() {
     try {
 
         let url = `${API_BASE_URL}/team?pageNumber=1&pagesize=20 `;
 
-        if(name){
-            url += `&name=${encodeURIComponent(name)}`;
+        if(currentName){
+            url += `&name=${encodeURIComponent(currentName)}`;
         }
 
-        if(sortBy){
-            url += `&sortBy=${sortBy}`;
+        if(currentSortBy){
+            url += `&sortBy=${currentSortBy}`;
         }
 
         console.log("Url da requisição", url);
@@ -27,6 +32,7 @@ async function getTeams(name = "", sortBy = "name") {
         console.log("Resposta da API:", data);
 
         renderTeams(data.items);
+        renderPagination(data);
 
     } catch (error) {
         console.error("Erro na requisição:", error);
@@ -62,10 +68,25 @@ function renderTeams(teams){
 function handleSearch(event){
     event.preventDefault();
 
-    const name = document.getElementById("teamName").value;
-    const sortBy = document.getElementById("sortBy").value;
+    currentName = document.getElementById("teamName").value;
+    currentSortBy = document.getElementById("sortBy").value;
 
-    getTeams(name, sortBy);
+    currentPage = 1;
+
+    getTeams();
+}
+
+function renderPagination(data){
+    const pageInfo = document.getElementById("pageInfo");
+    const nextBtn = document.getElementById("nextBtn");
+
+    if(!pageInfo || !nextBtn) return;
+
+    const totalPages = Math.ceil(data.totalCount / data.pageSize);
+
+    pageInfo.innerText = `Página ${data.pageNumber} de ${totalPages}`;
+
+    nextBtn.disabled = data.pageNumber >= totalPages;
 }
 
 document.addEventListener("DOMContentLoaded", () =>{
@@ -75,5 +96,25 @@ document.addEventListener("DOMContentLoaded", () =>{
 
     if(form){
         form.addEventListener("submit", handleSearch);
+    }
+
+    const prevBtn = document.getElementById("prevPage");
+    const nextBtn = document.getElementById("nextPage");
+
+
+    if(prevBtn){
+        prevBtn.addEventListener("click", () =>{
+            if(currentPage > 1){
+                currentPage--;
+                getTeams();
+            }
+        });
+    }
+
+    if(nextBtn){
+        nextBtn.addEventListener("click", () =>{
+            currentPage++;
+            getTeams();
+        });
     }
 });
