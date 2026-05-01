@@ -39,6 +39,50 @@ async function getTeams() {
     }
 }
 
+async function handleCreateTeam(event) {
+    
+    event.preventDefault();
+
+    const teamNameInput = document.getElementById("createTeamName");
+
+    if(!teamNameInput) return;
+
+    const name = teamNameInput.value.trim();
+
+    if(!name){
+        alert("Nome do time é obrigatório");
+        return;
+    }
+
+    try{
+
+        const response = await fetch(`${API_BASE_URL}/team`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name: name
+            })
+        });
+
+        if(!response.ok){
+            throw new Error("Erro ao criar o time");
+        }
+
+        const createdTeam = await response.json();
+
+        console.log("Time Criado: ", createdTeam);
+
+        teamNameInput.value = "";
+
+        getTeams();
+    }catch(Error){
+        console.error("Erro:", error);
+        alert("Erro ao criar o time");
+    }
+}
+
 async function loadTeamPlayers(teamId) {
     
     try{
@@ -147,12 +191,13 @@ function updateSelectedTeamName(teamName){
 function handleSearch(event){
     event.preventDefault();
 
-    currentName = document.getElementById("teamName").value;
-    currentSortBy = document.getElementById("sortBy").value;
+    const sortSelect = document.getElementById("sortBy");
 
-    currentPage = 1;
+    const sortBy = sortSelect ? sortSelect.value : "id";
 
-    getTeams();
+    console.log("Ordenando..", {sortBy});
+
+    getTeams(sortBy);
 }
 
 function renderPagination(data){
@@ -238,11 +283,18 @@ function showErrorPlayers(){
 document.addEventListener("DOMContentLoaded", () =>{
     getTeams();
 
-    const form = document.getElementById("teamForm");
+    const formTeamSearch = document.getElementById("teamSearch");
+    const formTeamCreate = document.getElementById("teamCreate");
 
-    if(form){
-        form.addEventListener("submit", handleSearch);
+    if(formTeamSearch){
+        formTeamSearch.addEventListener("submit", handleSearch);
     }
+
+    if(formTeamCreate){
+        formTeamCreate.addEventListener("submit", handleCreateTeam);
+    }
+
+
 
     const prevBtn = document.getElementById("prevPage");
     const nextBtn = document.getElementById("nextPage");

@@ -23,14 +23,21 @@
     <main>
 
         <section>
-            <h2>Buscar Times</h2>
 
-            <form id="teamForm">
+            <h2>Criar Time</h2>
+
+            <form id="teamCreate">
                 <label for="teamName">Nome do Time:</label>
-                <input type="text" id ="teamName" name="teamName" placeholder="Digite o nome do time">
+                <input type="text" id ="createTeamName" name="teamName" placeholder="Digite o nome do time">
 
-                <br><br>
+                <button type="submit">Criar</button>
+            </form>
+        </section>
+        
+        <section>
+            <h2>Times</h2>
 
+            <form id="teamSearch">
                 <label for="sortBy">Ordernar por:</label>
                 <select name="sortBy" id="sortBy">
                     <option value="name">Nome</option>
@@ -39,7 +46,7 @@
 
                 <br><br>
 
-                <button type="submit">Buscar</button>
+                <button type="submit">Ordernar</button>
             </form>
         </section>
 
