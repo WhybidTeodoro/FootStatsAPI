@@ -42,6 +42,9 @@ async function getTeams() {
 async function loadTeamPlayers(teamId) {
     
     try{
+
+        showLoadingPlayers();
+
           console.log("Buscando jogadores do time:", teamId);
 
           const response = await fetch (`${API_BASE_URL}/team/${teamId}/players?pageNumber=1&pageSize=10`);
@@ -57,6 +60,7 @@ async function loadTeamPlayers(teamId) {
           renderPlayers(data.items);
     }catch(error){
         console.error("Erro ao buscar jogadores:", error);
+        showLoadingPlayers();
     }
 }
 
@@ -70,6 +74,15 @@ function renderPlayers(players){
     section.style.display = "block";
 
     table.innerHTML = "";
+
+    if(!players || players.length === 0){
+        table.innerHTML = `
+        <tr>
+            <td colSpan= "7">Nenhum Jogador Encontrado.</td>
+        </tr>
+        `;
+        return;
+    }
 
     let rows = "";
 
@@ -91,7 +104,8 @@ function renderPlayers(players){
 }
 
 
-function handleTeamClick(teamId){
+function handleTeamClick(teamId, teamName){
+    updateSelectedTeamName(teamName);
     loadTeamPlayers(teamId)
     loadTeamStats(teamId)
 }
@@ -111,7 +125,7 @@ function renderTeams(teams){
             <tr>
                 <td>${team.id}</td>
                 <td>
-                    <a href="#" onClick="handleTeamClick(${team.id}); return false;">
+                    <a href="#" onClick="handleTeamClick(${team.id}, '${team.name}'); return false;">
                         ${team.name}    
                     </a>                    
                 </td>
@@ -119,6 +133,15 @@ function renderTeams(teams){
     });
 
     table.innerHTML = rows;
+}
+
+function updateSelectedTeamName(teamName){
+
+    const title = document.getElementById("playersTitle");
+
+    if(!title) return;
+
+    title.innerText = `Jogadores do Time: ${teamName}`;
 }
 
 function handleSearch(event){
@@ -181,6 +204,36 @@ async function loadTeamStats(teamId){
         console.error("erro ao buscar stats:", error);
     }
 }
+
+function showLoadingPlayers(){
+
+    const table = document.getElementById("playersTable");
+    const section = document.getElementById("teamPlayers");
+
+    if(!table || !section) return;
+
+    section.style.display = "block";
+
+    table.innerHTML = `
+    <tr>
+        <td colSpan="7">Carregando Jogadores....</td>
+    </tr> 
+    `;
+}
+
+function showErrorPlayers(){
+
+    const table = document.getElementById("playersTable");
+
+    if(!table) return;
+
+    table.innerHTML = `
+    <tr>
+        <td colSpan="7">Erro ao carregar jogadores</td>
+    </tr>
+    `;
+}
+
 
 document.addEventListener("DOMContentLoaded", () =>{
     getTeams();
