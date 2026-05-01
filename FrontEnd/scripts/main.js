@@ -39,6 +39,63 @@ async function getTeams() {
     }
 }
 
+async function loadTeamPlayers(teamId) {
+    
+    try{
+          console.log("Buscando jogadores do time:", teamId);
+
+          const response = await fetch (`${API_BASE_URL}/team/${teamId}/players?pageNumber=1&pageSize=10`);
+
+          if(!response.ok){
+            throw new Error("Erro ao buscar jogadores");
+          }
+
+          const data = await response.json();
+
+          console.log("Jogadores recebidos:", data);
+
+          renderPlayers(data.items);
+    }catch(error){
+        console.error("Erro ao buscar jogadores:", error);
+    }
+}
+
+function renderPlayers(players){
+    
+    const section = document.getElementById("teamPlayers");
+    const table = document.getElementById("playersTable");
+
+    if(!section || !table) return;
+
+    section.style.display = "block";
+
+    table.innerHTML = "";
+
+    let rows = "";
+
+    players.forEach(player => {
+        rows += `
+            <tr>
+                <td>${player.id}</td>
+                <td>${player.name}</td>
+                <td>${player.position}</td>
+                <td>${player.shirtNumber}</td>
+                <td>${player.goals}</td>
+                <td>${player.assists}</td>
+                <td>${player.matchesPlayed}</td>
+            </tr>
+        `;
+    });
+
+    table.innerHTML = rows;
+}
+
+
+function handleTeamClick(teamId){
+    loadTeamPlayers(teamId)
+    loadTeamStats(teamId)
+}
+
 function renderTeams(teams){
 
     const table = document.getElementById("teamsTable");
@@ -54,7 +111,7 @@ function renderTeams(teams){
             <tr>
                 <td>${team.id}</td>
                 <td>
-                    <a href="#" onClick="loadTeamStats(${team.id})">
+                    <a href="#" onClick="handleTeamClick(${team.id}); return false;">
                         ${team.name}    
                     </a>                    
                 </td>
