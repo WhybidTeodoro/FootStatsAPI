@@ -175,6 +175,7 @@ function renderTeams(teams){
                 </td>
 
                 <td>
+                    <button onClick="updateTeam(${team.id}, '${team.name}')">Editar Nome</button>
                     <button onClick="deleteTeam(${team.id})">Excluir</button>
                 </td>
             </tr>`;
@@ -305,6 +306,45 @@ async function deleteTeam(teamId){
     } catch (error){
         console.error(error);
         alert("Erro ao excluir o time");
+    }
+}
+
+async function updateTeam(teamId, currentName) {
+    
+    const newName = prompt("Digite o novo nome do time:", currentName);
+
+    if (newName === null) return;
+
+    const trimmedName = newName.trim();
+
+    if(!trimmedName){
+        alert("Nome não pode ser vazio");
+        return;
+    }
+
+    try{
+
+        const response = await fetch(`${API_BASE_URL}/team/${teamId}`,{
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name: trimmedName
+            })
+        });
+
+        if(!response.ok){
+            throw new Error("Erro ao atualizar o time");
+        }
+
+        console.log("Time atualizado com sucesso");
+
+        getTeams();
+
+    }catch(error){
+        console.error(error);
+        alert("Erro ao atualizar o time");
     }
 }
 
