@@ -173,6 +173,10 @@ function renderTeams(teams){
                         ${team.name}    
                     </a>                    
                 </td>
+
+                <td>
+                    <button onClick="deleteTeam(${team.id})">Excluir</button>
+                </td>
             </tr>`;
     });
 
@@ -277,6 +281,31 @@ function showErrorPlayers(){
         <td colSpan="7">Erro ao carregar jogadores</td>
     </tr>
     `;
+}
+
+async function deleteTeam(teamId){
+
+    const confirmDelete = confirm("Tem certeza que quer excluir o time?");
+    
+    if(!confirmDelete) return;
+
+    try{
+
+        const response = await fetch(`${API_BASE_URL}/team/${teamId}`,{
+            method: "DELETE"
+        });
+
+        if(!response.ok){
+            throw new Error("Erro ao excluir o time");
+        }
+
+        console.log("Time exluido com sucesso");
+
+        getTeams();
+    } catch (error){
+        console.error(error);
+        alert("Erro ao excluir o time");
+    }
 }
 
 
