@@ -123,3 +123,39 @@ section{
     margin-bottom: 30px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
+
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+.actions button{
+    padding: 6px 10px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.actions button:hover {
+    transform: scale(1.05);
+}
+
+.edit-btn{
+    background-color: #f59e0b;
+    color: white;
+}
+
+.edit-btn:hover{
+    background-color: #d97706;
+}
+
+.delete-btn {
+    background-color: #ef4444;
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #dc2626;
+}

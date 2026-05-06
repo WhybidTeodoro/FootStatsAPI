@@ -174,9 +174,9 @@ function renderTeams(teams){
                     </a>                    
                 </td>
 
-                <td>
-                    <button onClick="updateTeam(${team.id}, '${team.name}')">Editar Nome</button>
-                    <button onClick="deleteTeam(${team.id})">Excluir</button>
+                <td class="actions">
+                    <button class="edit-btn",  onClick="updateTeam(${team.id}, '${team.name}')">Editar Nome</button>
+                    <button class="delete-btn", onClick="deleteTeam(${team.id})">Excluir</button>
                 </td>
             </tr>`;
     });
